@@ -72,11 +72,11 @@ const Services = () => {
         <section 
           key={service.id} 
           id={service.name.toLowerCase()}
-          className={`py-16 md:py-24 ${service.id % 2 === 0 ? 'bg-antlia-light' : 'bg-white'}`}
+          className={`py-16 md:py-24 ${Number(service.id) % 2 === 0 ? 'bg-antlia-light' : 'bg-white'}`}
         >
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-center ${service.id % 2 === 0 ? '' : 'lg:flex-row-reverse'}`}>
-              <div className={`${service.id % 2 === 0 ? 'lg:order-2' : ''}`}>
+            <div className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-center ${Number(service.id) % 2 === 0 ? '' : 'lg:flex-row-reverse'}`}>
+              <div className={`${Number(service.id) % 2 === 0 ? 'lg:order-2' : ''}`}>
                 <div className="mb-8">
                   {getIcon(service.icon, 48)}
                 </div>
@@ -105,7 +105,7 @@ const Services = () => {
                 </Link>
               </div>
               
-              <div className={`${service.id % 2 === 0 ? 'lg:order-1' : ''} relative`}>
+              <div className={`${Number(service.id) % 2 === 0 ? 'lg:order-1' : ''} relative`}>
                 <img 
                   src={`/assets/service-${service.id}.jpg`} 
                   alt={service.name} 
@@ -113,8 +113,8 @@ const Services = () => {
                 />
                 
                 <div 
-                  className={`absolute ${service.id % 2 === 0 ? '-bottom-4 -left-4' : '-bottom-4 -right-4'} w-16 h-16 rounded-full ${
-                    String(service.id) % 2 === 0 ? 'bg-antlia-cyan' : 'bg-antlia-purple'
+                  className={`absolute ${Number(service.id) % 2 === 0 ? '-bottom-4 -left-4' : '-bottom-4 -right-4'} w-16 h-16 rounded-full ${
+                    Number(service.id) % 2 === 0 ? 'bg-antlia-cyan' : 'bg-antlia-purple'
                   }`}
                 ></div>
               </div>
