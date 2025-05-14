@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Check } from 'lucide-react';
 import { PricingPlan } from '@/context/DataContext';
+import { Button } from '@/components/ui/button';
 
 interface PricingCardProps {
   plan: PricingPlan;
@@ -31,17 +32,21 @@ const PricingCard: React.FC<PricingCardProps> = ({ plan }) => {
         ))}
       </ul>
       
-      <div className="mt-auto">
+      <div className="mt-auto space-y-3">
         <Link
           to={`/kontak?plan=${encodeURIComponent(plan.name)}`}
-          className={`block w-full py-2 px-4 text-center rounded-md font-medium transition-colors ${
-            plan.popular 
-              ? 'bg-antlia-purple text-white hover:bg-opacity-90' 
-              : 'bg-antlia-blue text-white hover:bg-opacity-90'
-          }`}
+          className="block w-full py-2 px-4 text-center rounded-md font-medium transition-colors bg-antlia-blue text-white hover:bg-antlia-blue hover:opacity-90"
         >
           Pilih Paket
         </Link>
+        
+        <Button
+          variant="outline"
+          className="w-full border-antlia-blue text-antlia-blue hover:bg-antlia-blue hover:text-white"
+          onClick={() => window.open('https://wa.me/6281573635143?text=Halo,%20saya%20ingin%20demo%20untuk%20paket%20' + encodeURIComponent(plan.name), '_blank')}
+        >
+          Demo
+        </Button>
       </div>
     </div>
   );

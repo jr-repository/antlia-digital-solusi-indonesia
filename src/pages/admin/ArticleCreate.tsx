@@ -1,11 +1,14 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Image, Upload } from 'lucide-react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import RichTextEditor from '@/components/admin/RichTextEditor';
 import { useData } from '@/context/DataContext';
 import { useToast } from '@/components/ui/use-toast';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 const ArticleCreate = () => {
   const navigate = useNavigate();
@@ -21,11 +24,14 @@ const ArticleCreate = () => {
     author: 'Tim Antlia',
     category: 'ERP',
   });
+
+  // Local state for image preview
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
-    // Auto-generate slug from title (simplified version)
+    // Auto-generate slug from title
     if (name === 'title') {
       const slug = value
         .toLowerCase()
@@ -53,14 +59,19 @@ const ArticleCreate = () => {
   };
   
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // For demo purposes, we'll just use a placeholder image
-    // In a real application, you would upload the file to a server
-    // and then set the URL to the uploaded file
-    
-    setFormData(prev => ({
-      ...prev,
-      image: '/assets/article-placeholder.jpg',
-    }));
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const imageUrl = reader.result as string;
+        setImagePreview(imageUrl);
+        setFormData(prev => ({
+          ...prev,
+          image: imageUrl,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
   
   const handleSubmit = (e: React.FormEvent) => {
@@ -97,32 +108,34 @@ const ArticleCreate = () => {
 
   return (
     <AdminLayout>
-      <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
+      <div className="px-4 sm:px-6 lg:px-8 py-6 w-full max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8 flex flex-wrap justify-between items-center">
+        <div className="mb-6 flex flex-wrap justify-between items-center bg-white p-4 rounded-lg shadow-sm">
           <div className="flex items-center mb-4 md:mb-0">
-            <button
+            <Button 
+              variant="ghost" 
+              size="icon"
               onClick={() => navigate(-1)}
-              className="mr-4 p-1 rounded-full hover:bg-gray-100"
+              className="mr-4"
               aria-label="Back"
             >
               <ArrowLeft size={20} />
-            </button>
+            </Button>
             <h1 className="text-2xl md:text-3xl font-bold">Tambah Artikel Baru</h1>
           </div>
           
-          <button
+          <Button
             type="button"
             onClick={handleSubmit}
-            className="inline-flex items-center px-4 py-2 bg-antlia-blue text-white font-medium rounded-md hover:bg-opacity-90 transition-colors"
+            className="bg-antlia-blue hover:bg-antlia-blue hover:opacity-90 text-white"
           >
             <Save size={16} className="mr-2" />
             Simpan Artikel
-          </button>
+          </Button>
         </div>
         
         {/* Form */}
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <Card>
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 lg:grid-cols-3 lg:divide-x">
               {/* Main Content */}
@@ -194,35 +207,45 @@ const ArticleCreate = () => {
               {/* Sidebar */}
               <div className="lg:col-span-1 p-6">
                 <div className="mb-6">
-                  <label htmlFor="image" className="block text-gray-700 font-medium mb-2">
+                  <label htmlFor="image" className="block text-gray-700 font-medium mb-2 flex items-center">
+                    <Image size={16} className="mr-2" />
                     Gambar Utama
                   </label>
-                  <div className="mb-4">
-                    {formData.image ? (
+                  <div className="mb-4 border border-dashed border-gray-300 rounded-lg overflow-hidden">
+                    {imagePreview || formData.image ? (
                       <img
-                        src={formData.image}
+                        src={imagePreview || formData.image}
                         alt="Article Preview"
-                        className="w-full h-40 object-cover rounded-md"
+                        className="w-full h-48 object-cover"
                       />
                     ) : (
-                      <div className="w-full h-40 bg-gray-100 rounded-md flex items-center justify-center">
-                        <span className="text-gray-400">Preview Gambar</span>
+                      <div className="w-full h-48 bg-gray-100 flex flex-col items-center justify-center">
+                        <Upload size={32} className="text-gray-400 mb-2" />
+                        <span className="text-gray-400">Upload Gambar</span>
                       </div>
                     )}
                   </div>
-                  <input
-                    type="file"
-                    id="image"
-                    onChange={handleImageChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-antlia-blue"
-                    accept="image/*"
-                  />
-                  <p className="mt-1 text-sm text-gray-500">
-                    Ukuran yang direkomendasikan: 1200x630px
+                  <div className="flex items-center">
+                    <label htmlFor="image-upload" className="flex-1">
+                      <div className="bg-antlia-blue text-white text-center py-2 px-4 rounded-md cursor-pointer hover:bg-opacity-90 flex items-center justify-center">
+                        <Upload size={16} className="mr-2" />
+                        Pilih Gambar
+                      </div>
+                      <input
+                        type="file"
+                        id="image-upload"
+                        onChange={handleImageChange}
+                        className="hidden"
+                        accept="image/*"
+                      />
+                    </label>
+                  </div>
+                  <p className="mt-2 text-xs text-gray-500">
+                    Format yang didukung: JPG, PNG. Ukuran maksimal: 2MB
                   </p>
                 </div>
-                
-                <div className="mb-6">
+
+                <div className="mb-6 bg-gray-50 p-4 rounded-md">
                   <label htmlFor="author" className="block text-gray-700 font-medium mb-2">
                     Penulis
                   </label>
@@ -255,10 +278,16 @@ const ArticleCreate = () => {
                     <option value="IoT">IoT</option>
                   </select>
                 </div>
+                
+                <div className="mt-6 flex justify-end">
+                  <Badge variant="outline" className="bg-gray-50">
+                    Draft
+                  </Badge>
+                </div>
               </div>
             </div>
           </form>
-        </div>
+        </Card>
       </div>
     </AdminLayout>
   );

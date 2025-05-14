@@ -1,5 +1,5 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { 
   Bold, Italic, Underline, List, ListOrdered, 
   AlignLeft, AlignCenter, AlignRight, Link as LinkIcon
@@ -16,8 +16,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ initialValue, onChange 
   const [showLinkInput, setShowLinkInput] = useState(false);
 
   // Initialize the editor with initial value
-  React.useEffect(() => {
-    if (editorRef.current) {
+  useEffect(() => {
+    if (editorRef.current && !editorRef.current.innerHTML) {
       editorRef.current.innerHTML = initialValue;
     }
   }, [initialValue]);
@@ -30,6 +30,10 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ initialValue, onChange 
 
   const execCommand = (command: string, value: string = '') => {
     document.execCommand(command, false, value);
+    // Focus back to the editor to maintain cursor position
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
     handleInput();
   };
 
@@ -50,7 +54,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ initialValue, onChange 
   };
 
   return (
-    <div className="border rounded-md overflow-hidden bg-white">
+    <div className="border rounded-md overflow-hidden bg-white shadow-sm">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-1 p-2 border-b bg-gray-50">
         <button
