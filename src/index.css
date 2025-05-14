@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -35,19 +36,12 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -97,5 +91,48 @@
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+  }
+}
+
+@layer components {
+  .hero-gradient {
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.3));
+  }
+  
+  .section-padding {
+    @apply py-16 md:py-24;
+  }
+  
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .article-content {
+    @apply text-justify leading-relaxed;
+  }
+  
+  .antlia-card {
+    @apply rounded-xl shadow-md transition-all duration-300 hover:shadow-lg border border-gray-200;
+  }
+  
+  .antlia-button {
+    @apply px-4 py-2 rounded-md transition-all duration-200;
+  }
+  
+  .antlia-button-primary {
+    @apply antlia-button bg-antlia-blue text-white hover:bg-opacity-90;
+  }
+  
+  .antlia-button-secondary {
+    @apply antlia-button bg-antlia-purple text-white hover:bg-opacity-90;
+  }
+  
+  .antlia-button-outline {
+    @apply antlia-button border border-antlia-blue text-antlia-blue hover:bg-antlia-blue hover:text-white;
   }
 }

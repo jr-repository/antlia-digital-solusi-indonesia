@@ -1,0 +1,50 @@
+
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Check } from 'lucide-react';
+import { PricingPlan } from '@/context/DataContext';
+
+interface PricingCardProps {
+  plan: PricingPlan;
+}
+
+const PricingCard: React.FC<PricingCardProps> = ({ plan }) => {
+  return (
+    <div className={`antlia-card p-6 flex flex-col h-full ${plan.popular ? 'border-antlia-purple shadow-lg relative' : ''}`}>
+      {plan.popular && (
+        <span className="absolute top-0 right-0 bg-antlia-purple text-white text-xs font-semibold px-3 py-1 rounded-bl-lg rounded-tr-lg">
+          Popular
+        </span>
+      )}
+      <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
+      <div className="mb-4">
+        <span className="text-2xl font-bold">{plan.price}</span>
+      </div>
+      <p className="text-gray-600 mb-6">{plan.description}</p>
+      
+      <ul className="space-y-3 mb-8">
+        {plan.features.map((feature, index) => (
+          <li key={index} className="flex items-start">
+            <Check size={18} className="text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+            <span className="text-gray-700">{feature}</span>
+          </li>
+        ))}
+      </ul>
+      
+      <div className="mt-auto">
+        <Link
+          to={`/kontak?plan=${encodeURIComponent(plan.name)}`}
+          className={`block w-full py-2 px-4 text-center rounded-md font-medium transition-colors ${
+            plan.popular 
+              ? 'bg-antlia-purple text-white hover:bg-opacity-90' 
+              : 'bg-antlia-blue text-white hover:bg-opacity-90'
+          }`}
+        >
+          Pilih Paket
+        </Link>
+      </div>
+    </div>
+  );
+};
+
+export default PricingCard;
