@@ -114,7 +114,7 @@ const Services = () => {
                 
                 <div 
                   className={`absolute ${service.id % 2 === 0 ? '-bottom-4 -left-4' : '-bottom-4 -right-4'} w-16 h-16 rounded-full ${
-                    service.id % 2 === 0 ? 'bg-antlia-cyan' : 'bg-antlia-purple'
+                    String(service.id) % 2 === 0 ? 'bg-antlia-cyan' : 'bg-antlia-purple'
                   }`}
                 ></div>
               </div>

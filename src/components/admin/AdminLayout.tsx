@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Menu, X, LayoutDashboard, FileText, Settings, LogOut,
-  ChevronDown, ChevronRight
+  ChevronDown, ChevronRight, ChevronLeft
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
