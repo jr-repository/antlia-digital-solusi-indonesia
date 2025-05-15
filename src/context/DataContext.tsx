@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // Types
@@ -24,17 +23,36 @@ export interface Service {
 
 export interface PricingPlan {
   id: string;
-  name: string;
   price: string;
+  name: string;
   description: string;
   features: string[];
   popular?: boolean;
+}
+
+export interface Client {
+  id: string;
+  name: string;
+  logo: string;
+  industry: string;
+  location: string;
+  implementation: string;
+}
+
+export interface Testimonial {
+  id: number;
+  name: string;
+  company: string;
+  image: string;
+  testimonial: string;
 }
 
 type DataContextType = {
   articles: Article[];
   services: Service[];
   pricing: PricingPlan[];
+  clients: Client[];
+  testimonials: Testimonial[];
   addArticle: (article: Omit<Article, 'id'>) => void;
   updateArticle: (id: string, article: Partial<Article>) => void;
   deleteArticle: (id: string) => void;
@@ -272,10 +290,103 @@ const samplePricing: PricingPlan[] = [
   },
 ];
 
+// Sample clients data
+const sampleClients: Client[] = [
+  {
+    id: '1',
+    name: 'TechGlobal',
+    logo: '/assets/client-1.png',
+    industry: 'Manufaktur',
+    location: 'Jakarta',
+    implementation: 'ERP',
+  },
+  {
+    id: '2',
+    name: 'LogisTech',
+    logo: '/assets/client-2.png',
+    industry: 'Logistik',
+    location: 'Surabaya',
+    implementation: 'WMS & TMS',
+  },
+  {
+    id: '3',
+    name: 'RetailOne',
+    logo: '/assets/client-3.png',
+    industry: 'Retail',
+    location: 'Bandung',
+    implementation: 'POS & ERP',
+  },
+  {
+    id: '4',
+    name: 'AgriBisnis',
+    logo: '/assets/client-4.png',
+    industry: 'Pertanian',
+    location: 'Medan',
+    implementation: 'IoT & ERP',
+  },
+  {
+    id: '5',
+    name: 'HealthPlus',
+    logo: '/assets/client-5.png',
+    industry: 'Kesehatan',
+    location: 'Makassar',
+    implementation: 'HRM & CRM',
+  },
+  {
+    id: '6',
+    name: 'EduTech',
+    logo: '/assets/client-6.png',
+    industry: 'Pendidikan',
+    location: 'Yogyakarta',
+    implementation: 'CRM',
+  },
+];
+
+// Sample testimonials data
+const sampleTestimonials: Testimonial[] = [
+  {
+    id: 1,
+    name: 'Budi Santoso',
+    company: 'TechGlobal',
+    image: '/assets/testimonial-1.jpg',
+    testimonial: 'Implementasi ERP dari Antlia telah meningkatkan efisiensi operasional kami sebesar 40% dalam 6 bulan pertama.',
+  },
+  {
+    id: 2,
+    name: 'Nina Wijaya',
+    company: 'LogisTech',
+    image: '/assets/testimonial-2.jpg',
+    testimonial: 'Sistem WMS dan TMS yang terintegrasi membantu kami mengoptimalkan rute pengiriman dan mengurangi biaya logistik hingga 25%.',
+  },
+  {
+    id: 3,
+    name: 'Hendro Wibowo',
+    company: 'RetailOne',
+    image: '/assets/testimonial-3.jpg',
+    testimonial: 'Solusi POS dari Antlia sangat user-friendly dan membantu kami mengelola multi-cabang dengan lebih efisien.',
+  },
+  {
+    id: 4,
+    name: 'Dewi Lestari',
+    company: 'AgriBisnis',
+    image: '/assets/testimonial-4.jpg',
+    testimonial: 'Teknologi IoT Antlia membantu kami memantau kondisi lahan pertanian secara real-time, meningkatkan hasil panen hingga 30%.',
+  },
+  {
+    id: 5,
+    name: 'Rahman Hakim',
+    company: 'HealthPlus',
+    image: '/assets/testimonial-5.jpg',
+    testimonial: 'Sistem HRM Antlia membantu kami mengelola jadwal staf medis dengan lebih efisien, meningkatkan kepuasan pasien.',
+  },
+];
+
 export const DataProvider = ({ children }: { children: React.ReactNode }) => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [services] = useState<Service[]>(sampleServices);
   const [pricing] = useState<PricingPlan[]>(samplePricing);
+  const [clients] = useState<Client[]>(sampleClients);
+  const [testimonials] = useState<Testimonial[]>(sampleTestimonials);
 
   // Initialize data
   useEffect(() => {
@@ -328,6 +439,8 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     articles,
     services,
     pricing,
+    clients,
+    testimonials,
     addArticle,
     updateArticle,
     deleteArticle,
