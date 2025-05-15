@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
@@ -51,7 +51,7 @@ const Navbar = () => {
                 to={link.path}
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   isActive(link.path)
-                    ? 'text-antlia-purple'
+                    ? 'text-white bg-antlia-blue'
                     : 'text-gray-600 hover:text-antlia-blue hover:bg-gray-50'
                 }`}
               >
@@ -94,7 +94,7 @@ const Navbar = () => {
               onClick={() => setIsOpen(false)}
               className={`block px-3 py-2 rounded-md text-base font-medium ${
                 isActive(link.path)
-                  ? 'bg-antlia-blue bg-opacity-10 text-antlia-blue'
+                  ? 'bg-antlia-blue text-white'
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
               }`}
             >
