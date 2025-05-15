@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, Instagram, Linkedin } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -12,25 +12,20 @@ const Footer = () => {
           <div className="col-span-1">
             <Link to="/" className="flex items-center mb-4">
               <img className="h-8 w-auto" src="/assets/logo-white.png" alt="Antlia Logo" />
-              <span className="ml-2 text-xl font-bold">Antlia</span>
+              <div className="ml-2">
+                <span className="block text-xl font-bold">Antlia</span>
+                <span className="block text-xs text-gray-400">by Techno King</span>
+              </div>
             </Link>
             <p className="text-gray-300 mb-4">
-              Solusi teknologi digital terbaik untuk transformasi bisnis Anda.
+              Solusi teknologi inovatif untuk rantai pasok global, dengan fokus meningkatkan produktivitas, menekan biaya, dan mendukung keberlanjutan.
             </p>
             <div className="flex space-x-4">
-              <a href="https://facebook.com" className="text-gray-300 hover:text-antlia-blue">
-                <Facebook size={20} />
-                <span className="sr-only">Facebook</span>
-              </a>
-              <a href="https://twitter.com" className="text-gray-300 hover:text-antlia-blue">
-                <Twitter size={20} />
-                <span className="sr-only">Twitter</span>
-              </a>
-              <a href="https://instagram.com" className="text-gray-300 hover:text-antlia-blue">
+              <a href="https://instagram.com/antlia.id" className="text-gray-300 hover:text-antlia-blue">
                 <Instagram size={20} />
                 <span className="sr-only">Instagram</span>
               </a>
-              <a href="https://linkedin.com" className="text-gray-300 hover:text-antlia-blue">
+              <a href="https://linkedin.com/company/antlia" className="text-gray-300 hover:text-antlia-blue">
                 <Linkedin size={20} />
                 <span className="sr-only">LinkedIn</span>
               </a>
@@ -43,7 +38,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <Link to="/" className="text-gray-300 hover:text-antlia-blue transition-colors">
-                  Beranda
+                  Home
                 </Link>
               </li>
               <li>
@@ -53,12 +48,17 @@ const Footer = () => {
               </li>
               <li>
                 <Link to="/layanan" className="text-gray-300 hover:text-antlia-blue transition-colors">
-                  Layanan
+                  Produk & Layanan
                 </Link>
               </li>
               <li>
-                <Link to="/harga" className="text-gray-300 hover:text-antlia-blue transition-colors">
-                  Harga
+                <Link to="/solusi" className="text-gray-300 hover:text-antlia-blue transition-colors">
+                  Solusi
+                </Link>
+              </li>
+              <li>
+                <Link to="/klien" className="text-gray-300 hover:text-antlia-blue transition-colors">
+                  Klien
                 </Link>
               </li>
               <li>
@@ -69,9 +69,9 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Services */}
+          {/* Products */}
           <div className="col-span-1">
-            <h3 className="text-lg font-semibold mb-4">Layanan Kami</h3>
+            <h3 className="text-lg font-semibold mb-4">Produk Kami</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/layanan" className="text-gray-300 hover:text-antlia-blue transition-colors">
@@ -113,20 +113,22 @@ const Footer = () => {
               <li className="flex items-start">
                 <MapPin size={18} className="mr-2 mt-0.5 text-antlia-blue" />
                 <span className="text-gray-300">
-                  Jl. Teknologi Digital No. 123, Jakarta, Indonesia
+                  BSD, Tangerang Selatan, Banten
                 </span>
               </li>
               <li className="flex items-center">
                 <Phone size={18} className="mr-2 text-antlia-blue" />
-                <a href="tel:+6281573635143" className="text-gray-300 hover:text-antlia-blue transition-colors">
-                  +62 815-7363-5143
+                <a href="tel:+6287762877273" className="text-gray-300 hover:text-antlia-blue transition-colors">
+                  +62 877-6287-7273
                 </a>
               </li>
-              <li className="flex items-center">
-                <Mail size={18} className="mr-2 text-antlia-blue" />
-                <a href="mailto:info@antlia.id" className="text-gray-300 hover:text-antlia-blue transition-colors">
-                  info@antlia.id
-                </a>
+              <li className="flex items-start">
+                <Clock size={18} className="mr-2 mt-0.5 text-antlia-blue" />
+                <div className="text-gray-300">
+                  <p>Senin - Jumat: 8.00-17.00</p>
+                  <p>Sabtu: 08.00-14.00</p>
+                  <p>Customer Services: 24/7</p>
+                </div>
               </li>
             </ul>
           </div>
@@ -134,7 +136,7 @@ const Footer = () => {
 
         <div className="border-t border-gray-800 mt-12 pt-8">
           <p className="text-center text-gray-400">
-            &copy; {new Date().getFullYear()} Antlia. Seluruh Hak Cipta Dilindungi.
+            &copy; {new Date().getFullYear()} Antlia by Techno King. Seluruh Hak Cipta Dilindungi.
           </p>
         </div>
       </div>

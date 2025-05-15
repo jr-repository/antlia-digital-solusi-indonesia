@@ -12,10 +12,10 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { name: 'Beranda', path: '/' },
-    { name: 'Tentang Kami', path: '/tentang' },
-    { name: 'Layanan', path: '/layanan' },
-    { name: 'Harga', path: '/harga' },
+    { name: 'Home', path: '/' },
+    { name: 'Produk & Layanan', path: '/layanan' },
+    { name: 'Solusi', path: '/solusi' }, // New section
+    { name: 'Klien', path: '/klien' },   // New section
     { name: 'Artikel', path: '/artikel' },
     { name: 'Kontak', path: '/kontak' },
   ];
@@ -38,7 +38,10 @@ const Navbar = () => {
                   src="/assets/logo.png" 
                   alt="Antlia Logo" 
                 />
-                <span className="ml-2 text-xl font-bold text-gray-800">Antlia</span>
+                <div className="ml-2">
+                  <span className="block text-xl font-bold text-gray-800">Antlia</span>
+                  <span className="block text-xs text-gray-500">Inclusive by Design, Powerful by Nature</span>
+                </div>
               </Link>
             </div>
           </div>
@@ -62,7 +65,7 @@ const Navbar = () => {
               to="/kontak"
               className="ml-4 px-4 py-2 rounded-md bg-antlia-blue text-white text-sm font-medium transition-colors hover:bg-opacity-90"
             >
-              Hubungi Kami
+              Demo Gratis
             </Link>
           </div>
           
@@ -106,7 +109,7 @@ const Navbar = () => {
             onClick={() => setIsOpen(false)}
             className="block w-full text-center mt-3 px-4 py-2 rounded-md bg-antlia-blue text-white text-base font-medium"
           >
-            Hubungi Kami
+            Demo Gratis
           </Link>
         </div>
       </div>

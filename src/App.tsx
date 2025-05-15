@@ -14,6 +14,8 @@ import Articles from "./pages/Articles";
 import ArticleDetail from "./pages/ArticleDetail";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
+import Solutions from "./pages/Solutions"; // New page
+import Clients from "./pages/Clients"; // New page
 
 // Admin Pages
 import AdminLogin from "./pages/admin/Login";
@@ -42,6 +44,8 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/tentang" element={<About />} />
               <Route path="/layanan" element={<Services />} />
+              <Route path="/solusi" element={<Solutions />} />  {/* New route */}
+              <Route path="/klien" element={<Clients />} />  {/* New route */}
               <Route path="/harga" element={<Pricing />} />
               <Route path="/artikel" element={<Articles />} />
               <Route path="/artikel/:id" element={<ArticleDetail />} />
