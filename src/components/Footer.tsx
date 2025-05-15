@@ -2,8 +2,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Clock, Instagram, Linkedin } from 'lucide-react';
+import { useData } from '@/context/DataContext';
 
 const Footer = () => {
+  const { footerInfo } = useData();
+  const { companyInfo, quickLinks, products, contactInfo } = footerInfo;
+
   return (
     <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -18,14 +22,14 @@ const Footer = () => {
               </div>
             </Link>
             <p className="text-gray-300 mb-4">
-              Solusi teknologi inovatif untuk rantai pasok global, dengan fokus meningkatkan produktivitas, menekan biaya, dan mendukung keberlanjutan.
+              {companyInfo.description}
             </p>
             <div className="flex space-x-4">
-              <a href="https://instagram.com/antlia.id" className="text-gray-300 hover:text-antlia-blue">
+              <a href={companyInfo.socialLinks.instagram} className="text-gray-300 hover:text-antlia-blue">
                 <Instagram size={20} />
                 <span className="sr-only">Instagram</span>
               </a>
-              <a href="https://linkedin.com/company/antlia" className="text-gray-300 hover:text-antlia-blue">
+              <a href={companyInfo.socialLinks.linkedin} className="text-gray-300 hover:text-antlia-blue">
                 <Linkedin size={20} />
                 <span className="sr-only">LinkedIn</span>
               </a>
@@ -36,36 +40,13 @@ const Footer = () => {
           <div className="col-span-1">
             <h3 className="text-lg font-semibold mb-4">Tautan Cepat</h3>
             <ul className="space-y-2">
-              <li>
-                <Link to="/" className="text-gray-300 hover:text-antlia-blue transition-colors">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link to="/tentang" className="text-gray-300 hover:text-antlia-blue transition-colors">
-                  Tentang Kami
-                </Link>
-              </li>
-              <li>
-                <Link to="/layanan" className="text-gray-300 hover:text-antlia-blue transition-colors">
-                  Produk & Layanan
-                </Link>
-              </li>
-              <li>
-                <Link to="/solusi" className="text-gray-300 hover:text-antlia-blue transition-colors">
-                  Solusi
-                </Link>
-              </li>
-              <li>
-                <Link to="/klien" className="text-gray-300 hover:text-antlia-blue transition-colors">
-                  Klien
-                </Link>
-              </li>
-              <li>
-                <Link to="/artikel" className="text-gray-300 hover:text-antlia-blue transition-colors">
-                  Artikel
-                </Link>
-              </li>
+              {quickLinks.map((link) => (
+                <li key={link.id}>
+                  <Link to={link.url} className="text-gray-300 hover:text-antlia-blue transition-colors">
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -73,36 +54,13 @@ const Footer = () => {
           <div className="col-span-1">
             <h3 className="text-lg font-semibold mb-4">Produk Kami</h3>
             <ul className="space-y-2">
-              <li>
-                <Link to="/layanan" className="text-gray-300 hover:text-antlia-blue transition-colors">
-                  Enterprise Resource Planning
-                </Link>
-              </li>
-              <li>
-                <Link to="/layanan" className="text-gray-300 hover:text-antlia-blue transition-colors">
-                  Warehouse Management
-                </Link>
-              </li>
-              <li>
-                <Link to="/layanan" className="text-gray-300 hover:text-antlia-blue transition-colors">
-                  Transport Management
-                </Link>
-              </li>
-              <li>
-                <Link to="/layanan" className="text-gray-300 hover:text-antlia-blue transition-colors">
-                  HRM System
-                </Link>
-              </li>
-              <li>
-                <Link to="/layanan" className="text-gray-300 hover:text-antlia-blue transition-colors">
-                  CRM System
-                </Link>
-              </li>
-              <li>
-                <Link to="/layanan" className="text-gray-300 hover:text-antlia-blue transition-colors">
-                  IoT Technologies
-                </Link>
-              </li>
+              {products.map((product) => (
+                <li key={product.id}>
+                  <Link to={product.url} className="text-gray-300 hover:text-antlia-blue transition-colors">
+                    {product.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -113,21 +71,21 @@ const Footer = () => {
               <li className="flex items-start">
                 <MapPin size={18} className="mr-2 mt-0.5 text-antlia-blue" />
                 <span className="text-gray-300">
-                  BSD, Tangerang Selatan, Banten
+                  {contactInfo.address}
                 </span>
               </li>
               <li className="flex items-center">
                 <Phone size={18} className="mr-2 text-antlia-blue" />
-                <a href="tel:+6287762877273" className="text-gray-300 hover:text-antlia-blue transition-colors">
-                  +62 877-6287-7273
+                <a href={`tel:${contactInfo.phone.replace(/\s+/g, '')}`} className="text-gray-300 hover:text-antlia-blue transition-colors">
+                  {contactInfo.phone}
                 </a>
               </li>
               <li className="flex items-start">
                 <Clock size={18} className="mr-2 mt-0.5 text-antlia-blue" />
                 <div className="text-gray-300">
-                  <p>Senin - Jumat: 8.00-17.00</p>
-                  <p>Sabtu: 08.00-14.00</p>
-                  <p>Customer Services: 24/7</p>
+                  <p>{contactInfo.officeHours.weekday}</p>
+                  <p>{contactInfo.officeHours.saturday}</p>
+                  <p>{contactInfo.officeHours.support}</p>
                 </div>
               </li>
             </ul>

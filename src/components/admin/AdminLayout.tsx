@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Menu, X, LayoutDashboard, FileText, Settings, LogOut,
-  ChevronDown, ChevronRight, ChevronLeft
+  ChevronDown, ChevronRight, ChevronLeft, Users, PackageOpen, Building
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
@@ -40,6 +40,21 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       icon: <FileText size={20} />,
     },
     {
+      name: 'Paket & Layanan',
+      path: '/admin/packages',
+      icon: <PackageOpen size={20} />,
+    },
+    {
+      name: 'Tim Kami',
+      path: '/admin/team',
+      icon: <Users size={20} />,
+    },
+    {
+      name: 'Klien & Studi Kasus',
+      path: '/admin/clients',
+      icon: <Building size={20} />,
+    },
+    {
       name: 'Pengaturan',
       path: '/admin/pengaturan',
       icon: <Settings size={20} />,
@@ -59,9 +74,13 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         } transition-all duration-300 fixed h-full z-30`}
       >
         <div className="p-4 flex items-center justify-between border-b border-gray-700">
-          {isSidebarOpen && (
+          {isSidebarOpen ? (
             <Link to="/admin/dashboard" className="text-lg font-semibold">
               Antlia Admin
+            </Link>
+          ) : (
+            <Link to="/admin/dashboard" className="flex justify-center">
+              <img src="/assets/logo-white.png" alt="Logo" className="h-6 w-auto" />
             </Link>
           )}
           <button
