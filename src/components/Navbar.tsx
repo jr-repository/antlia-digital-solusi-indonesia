@@ -14,8 +14,9 @@ const Navbar = () => {
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Produk & Layanan', path: '/layanan' },
-    { name: 'Solusi', path: '/solusi' }, // New section
-    { name: 'Klien', path: '/klien' },   // New section
+    { name: 'Tentang Kami', path: '/tentang' },
+    { name: 'Solusi', path: '/solusi' },
+    { name: 'Klien', path: '/klien' },
     { name: 'Artikel', path: '/artikel' },
     { name: 'Kontak', path: '/kontak' },
   ];

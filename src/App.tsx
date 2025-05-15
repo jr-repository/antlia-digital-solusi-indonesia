@@ -9,13 +9,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Services from "./pages/Services";
-import Pricing from "./pages/Pricing";
 import Articles from "./pages/Articles";
 import ArticleDetail from "./pages/ArticleDetail";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
-import Solutions from "./pages/Solutions"; // New page
-import Clients from "./pages/Clients"; // New page
+import Solutions from "./pages/Solutions";
+import Clients from "./pages/Clients";
 
 // Admin Pages
 import AdminLogin from "./pages/admin/Login";
@@ -44,9 +43,8 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/tentang" element={<About />} />
               <Route path="/layanan" element={<Services />} />
-              <Route path="/solusi" element={<Solutions />} />  {/* New route */}
-              <Route path="/klien" element={<Clients />} />  {/* New route */}
-              <Route path="/harga" element={<Pricing />} />
+              <Route path="/solusi" element={<Solutions />} />
+              <Route path="/klien" element={<Clients />} />
               <Route path="/artikel" element={<Articles />} />
               <Route path="/artikel/:id" element={<ArticleDetail />} />
               <Route path="/kontak" element={<Contact />} />
