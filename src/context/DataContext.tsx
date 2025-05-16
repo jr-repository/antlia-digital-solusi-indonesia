@@ -6,6 +6,7 @@ export interface Article {
   title: string;
   slug: string;
   content: string;
+  summary: string;
   excerpt: string;
   date: string;
   author: string;
@@ -111,6 +112,7 @@ type DataContextType = {
   addArticle: (article: Omit<Article, 'id'>) => void;
   updateArticle: (id: string, article: Partial<Article>) => void;
   deleteArticle: (id: string) => void;
+  getArticleById: (id: string) => Article | undefined;
   updatePricing: (id: string, plan: Partial<PricingPlan>) => void;
   updateClient: (id: string, client: Partial<Client>) => void;
   addClient: (client: Omit<Client, 'id'>) => void;
@@ -664,6 +666,9 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     const newArticle = {
       ...article,
       id: Date.now().toString(),
+      tags: article.tags || [],
+      featured: article.featured || false,
+      excerpt: article.excerpt || article.summary,
     };
     setArticles([newArticle, ...articles]);
   };
@@ -676,6 +681,11 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
 
   const deleteArticle = (id: string) => {
     setArticles(articles.filter(article => article.id !== id));
+  };
+
+  // Fungsi untuk mendapatkan article berdasarkan ID
+  const getArticleById = (id: string) => {
+    return articles.find(article => article.id === id);
   };
 
   // Pricing functions
@@ -762,6 +772,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     addArticle,
     updateArticle,
     deleteArticle,
+    getArticleById,
     updatePricing,
     updateClient,
     addClient,

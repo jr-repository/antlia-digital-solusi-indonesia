@@ -1,7 +1,15 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FileText, Users, ShoppingBag, BarChart4, Layout, Plus, Edit, Eye, ArrowUp, ArrowDown } from 'lucide-react';
+import { 
+  ChevronRight, 
+  Users, 
+  File, 
+  Settings, 
+  Package, 
+  Calendar, 
+  ArrowRight, 
+  Home, 
+} from 'lucide-react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { useData } from '@/context/DataContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -38,7 +46,7 @@ const Dashboard = () => {
     {
       title: 'Paket',
       value: pricing.length,
-      icon: <ShoppingBag className="h-6 w-6 text-white" />,
+      icon: <Package className="h-6 w-6 text-white" />,
       color: 'bg-purple-500',
       link: '/admin/packages',
       change: '0%',
@@ -47,7 +55,7 @@ const Dashboard = () => {
     {
       title: 'Klien',
       value: clients.length,
-      icon: <BarChart4 className="h-6 w-6 text-white" />,
+      icon: <File className="h-6 w-6 text-white" />,
       color: 'bg-yellow-500',
       link: '/admin/clients',
       change: '+2',
@@ -323,7 +331,7 @@ const Dashboard = () => {
                   to="/admin/artikel/baru"
                   className="p-4 border rounded-md flex flex-col items-center text-center hover:bg-antlia-blue hover:bg-opacity-5 hover:border-antlia-blue transition-all"
                 >
-                  <FileText size={30} className="mb-2 text-antlia-blue" />
+                  <File size={30} className="mb-2 text-antlia-blue" />
                   <span>Tulis Artikel Baru</span>
                 </Link>
                 
@@ -331,7 +339,7 @@ const Dashboard = () => {
                   to="/admin/packages"
                   className="p-4 border rounded-md flex flex-col items-center text-center hover:bg-purple-500 hover:bg-opacity-5 hover:border-purple-500 transition-all"
                 >
-                  <ShoppingBag size={30} className="mb-2 text-purple-500" />
+                  <Package size={30} className="mb-2 text-purple-500" />
                   <span>Kelola Paket</span>
                 </Link>
                 
@@ -347,7 +355,7 @@ const Dashboard = () => {
                   to="/admin/clients"
                   className="p-4 border rounded-md flex flex-col items-center text-center hover:bg-yellow-500 hover:bg-opacity-5 hover:border-yellow-500 transition-all"
                 >
-                  <Building size={30} className="mb-2 text-yellow-500" />
+                  <Home size={30} className="mb-2 text-yellow-500" />
                   <span>Kelola Klien</span>
                 </Link>
                 
@@ -355,7 +363,7 @@ const Dashboard = () => {
                   to="/admin/pengaturan"
                   className="p-4 border rounded-md flex flex-col items-center text-center hover:bg-antlia-purple hover:bg-opacity-5 hover:border-antlia-purple transition-all"
                 >
-                  <Layout size={30} className="mb-2 text-antlia-purple" />
+                  <Settings size={30} className="mb-2 text-antlia-purple" />
                   <span>Kelola Website</span>
                 </Link>
                 

@@ -1,5 +1,15 @@
-
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { 
+  Settings, 
+  Users, 
+  Package, 
+  Edit, 
+  File, 
+  Home, 
+  ArrowRight,
+  Trash,
+} from 'lucide-react';
 import { useData } from '@/context/DataContext';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -465,11 +475,11 @@ const Clients = () => {
         <Tabs defaultValue="clients" className="w-full">
           <TabsList className="mb-6">
             <TabsTrigger value="clients" className="flex items-center">
-              <Building size={16} className="mr-2" />
+              <Home size={18} className="mr-2" />
               Klien & Studi Kasus
             </TabsTrigger>
             <TabsTrigger value="testimonials" className="flex items-center">
-              <FileText size={16} className="mr-2" />
+              <File size={18} className="mr-2" />
               Testimonial
             </TabsTrigger>
           </TabsList>

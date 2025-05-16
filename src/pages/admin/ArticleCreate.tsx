@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Image, Upload } from 'lucide-react';
@@ -23,6 +22,9 @@ const ArticleCreate = () => {
     image: '',
     author: 'Tim Antlia',
     category: 'ERP',
+    tags: [''],
+    featured: false,
+    excerpt: ''
   });
 
   // Local state for image preview
@@ -95,6 +97,7 @@ const ArticleCreate = () => {
       ...formData,
       date: currentDate,
       image: formData.image || '/assets/article-placeholder.jpg',
+      excerpt: formData.excerpt || formData.summary, // Gunakan summary sebagai excerpt jika tidak diisi
     });
     
     toast({
