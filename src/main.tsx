@@ -1,9 +1,11 @@
 
 import { createRoot } from 'react-dom/client';
 import { useState, useEffect } from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import App from './App.tsx';
 import './index.css';
 import LoadingScreen from './components/LoadingScreen.tsx';
+import { AuthProvider } from './context/AuthContext';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
@@ -35,7 +37,13 @@ const AppWithLoading = () => {
   return (
     <>
       {isLoading && <LoadingScreen onLoadComplete={() => setIsLoading(false)} />}
-      {!isLoading && <App />}
+      {!isLoading && (
+        <BrowserRouter>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </BrowserRouter>
+      )}
     </>
   );
 };
