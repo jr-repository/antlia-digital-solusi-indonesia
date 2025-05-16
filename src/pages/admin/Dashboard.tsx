@@ -25,6 +25,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { AreaChart, Area, LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { format } from 'date-fns';
+import id from 'date-fns/locale/id';
 
 const Dashboard = () => {
   const { articles, pricing, clients, team } = useData();
@@ -107,7 +108,7 @@ const Dashboard = () => {
           <div>
             <h1 className="text-2xl font-bold text-gray-800 mb-1">Dashboard</h1>
             <div className="text-sm text-gray-500">
-              {format(new Date(), 'EEEE, dd MMMM yyyy', { locale: require('date-fns/locale/id') })}
+              {format(new Date(), 'EEEE, dd MMMM yyyy', { locale: id })}
             </div>
           </div>
           <div className="flex space-x-2">
