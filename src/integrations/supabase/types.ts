@@ -9,7 +9,252 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      articles: {
+        Row: {
+          author: string
+          category: string
+          content: string
+          created_at: string
+          date: string
+          excerpt: string | null
+          featured: boolean
+          id: string
+          image: string
+          slug: string
+          summary: string
+          tags: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author: string
+          category: string
+          content: string
+          created_at?: string
+          date: string
+          excerpt?: string | null
+          featured?: boolean
+          id?: string
+          image: string
+          slug: string
+          summary: string
+          tags?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author?: string
+          category?: string
+          content?: string
+          created_at?: string
+          date?: string
+          excerpt?: string | null
+          featured?: boolean
+          id?: string
+          image?: string
+          slug?: string
+          summary?: string
+          tags?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      clients: {
+        Row: {
+          case_study: Json | null
+          created_at: string
+          id: string
+          implementation: string
+          industry: string
+          location: string
+          logo: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          case_study?: Json | null
+          created_at?: string
+          id?: string
+          implementation: string
+          industry: string
+          location: string
+          logo: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          case_study?: Json | null
+          created_at?: string
+          id?: string
+          implementation?: string
+          industry?: string
+          location?: string
+          logo?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      footer_info: {
+        Row: {
+          company_info: Json
+          contact_info: Json
+          created_at: string
+          id: string
+          products: Json
+          quick_links: Json
+          updated_at: string
+        }
+        Insert: {
+          company_info: Json
+          contact_info: Json
+          created_at?: string
+          id?: string
+          products: Json
+          quick_links: Json
+          updated_at?: string
+        }
+        Update: {
+          company_info?: Json
+          contact_info?: Json
+          created_at?: string
+          id?: string
+          products?: Json
+          quick_links?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      pricing_plans: {
+        Row: {
+          created_at: string
+          description: string
+          features: string[]
+          id: string
+          name: string
+          popular: boolean | null
+          price: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          features: string[]
+          id?: string
+          name: string
+          popular?: boolean | null
+          price: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          features?: string[]
+          id?: string
+          name?: string
+          popular?: boolean | null
+          price?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      services: {
+        Row: {
+          created_at: string
+          description: string
+          features: string[]
+          icon: string
+          id: string
+          image: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          features: string[]
+          icon: string
+          id?: string
+          image: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          features?: string[]
+          icon?: string
+          id?: string
+          image?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      team_members: {
+        Row: {
+          bio: string
+          created_at: string
+          id: string
+          name: string
+          photo: string
+          position: string
+          socials: Json
+          updated_at: string
+        }
+        Insert: {
+          bio: string
+          created_at?: string
+          id?: string
+          name: string
+          photo: string
+          position: string
+          socials: Json
+          updated_at?: string
+        }
+        Update: {
+          bio?: string
+          created_at?: string
+          id?: string
+          name?: string
+          photo?: string
+          position?: string
+          socials?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      testimonials: {
+        Row: {
+          company: string
+          created_at: string
+          id: string
+          image: string
+          name: string
+          testimonial: string
+          updated_at: string
+        }
+        Insert: {
+          company: string
+          created_at?: string
+          id?: string
+          image: string
+          name: string
+          testimonial: string
+          updated_at?: string
+        }
+        Update: {
+          company?: string
+          created_at?: string
+          id?: string
+          image?: string
+          name?: string
+          testimonial?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

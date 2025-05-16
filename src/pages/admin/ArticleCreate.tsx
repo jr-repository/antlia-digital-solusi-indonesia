@@ -1,18 +1,20 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Image, Upload } from 'lucide-react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import RichTextEditor from '@/components/admin/RichTextEditor';
-import { useData } from '@/context/DataContext';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
 
 const ArticleCreate = () => {
   const navigate = useNavigate();
-  const { addArticle } = useData();
-  const { toast } = useToast();
+  const { toast: uiToast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [formData, setFormData] = useState({
     title: '',
@@ -76,37 +78,49 @@ const ArticleCreate = () => {
     }
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validate form
     if (!formData.title || !formData.summary || !formData.content) {
-      toast({
-        title: 'Error',
-        description: 'Harap isi semua field yang wajib.',
-        variant: 'destructive',
-      });
+      toast.error('Harap isi semua field yang wajib.');
       return;
     }
     
-    // Set current date if not provided
-    const currentDate = new Date().toISOString().split('T')[0];
-    
-    // Add the article
-    addArticle({
-      ...formData,
-      date: currentDate,
-      image: formData.image || '/assets/article-placeholder.jpg',
-      excerpt: formData.excerpt || formData.summary, // Gunakan summary sebagai excerpt jika tidak diisi
-    });
-    
-    toast({
-      title: 'Artikel Dibuat',
-      description: 'Artikel baru telah berhasil dibuat.',
-    });
-    
-    // Navigate back to articles list
-    navigate('/admin/artikel');
+    try {
+      setIsSubmitting(true);
+      
+      // Set current date if not provided
+      const currentDate = new Date().toISOString().split('T')[0];
+      
+      // Prepare data for Supabase
+      const articleData = {
+        ...formData,
+        date: currentDate,
+        image: formData.image || '/assets/article-placeholder.jpg',
+        excerpt: formData.excerpt || formData.summary, // Gunakan summary sebagai excerpt jika tidak diisi
+      };
+      
+      // Insert to Supabase
+      const { data, error } = await supabase
+        .from('articles')
+        .insert(articleData)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      toast.success('Artikel baru berhasil dibuat');
+      
+      // Navigate back to articles list
+      navigate('/admin/artikel');
+      
+    } catch (error) {
+      console.error('Error creating article:', error);
+      toast.error('Gagal membuat artikel. Silakan coba lagi.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -131,9 +145,19 @@ const ArticleCreate = () => {
             type="button"
             onClick={handleSubmit}
             className="bg-antlia-blue hover:bg-antlia-blue hover:opacity-90 text-white"
+            disabled={isSubmitting}
           >
-            <Save size={16} className="mr-2" />
-            Simpan Artikel
+            {isSubmitting ? (
+              <>
+                <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-solid border-white border-r-transparent"></div>
+                Menyimpan...
+              </>
+            ) : (
+              <>
+                <Save size={16} className="mr-2" />
+                Simpan Artikel
+              </>
+            )}
           </Button>
         </div>
         

@@ -1,10 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Search, Trash, Edit, Eye, Calendar, User, Tag } from 'lucide-react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { useData } from '@/context/DataContext';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,13 +17,57 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+interface Article {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;
+  summary: string;
+  excerpt?: string;
+  date: string;
+  author: string;
+  category: string;
+  tags: string[];
+  featured: boolean;
+  image: string;
+}
+
 const Articles = () => {
-  const { articles, deleteArticle } = useData();
-  const { toast } = useToast();
+  const { toast: uiToast } = useToast();
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [articleToDelete, setArticleToDelete] = useState<string | null>(null);
+
+  // Fetch articles from Supabase
+  useEffect(() => {
+    fetchArticles();
+  }, []);
+
+  const fetchArticles = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('articles')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        throw error;
+      }
+      
+      if (data) {
+        setArticles(data);
+      }
+    } catch (error) {
+      console.error('Error fetching articles:', error);
+      toast.error('Gagal memuat artikel');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Get unique categories
   const categories = ['all', ...new Set(articles.map(article => article.category))];
@@ -42,16 +87,25 @@ const Articles = () => {
     setShowDeleteAlert(true);
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (articleToDelete) {
-      deleteArticle(articleToDelete);
-      setShowDeleteAlert(false);
-      setArticleToDelete(null);
-      
-      toast({
-        title: 'Artikel Dihapus',
-        description: 'Artikel telah berhasil dihapus.',
-      });
+      try {
+        const { error } = await supabase
+          .from('articles')
+          .delete()
+          .eq('id', articleToDelete);
+        
+        if (error) throw error;
+        
+        setArticles(articles.filter(article => article.id !== articleToDelete));
+        toast.success('Artikel berhasil dihapus');
+      } catch (error) {
+        console.error('Error deleting article:', error);
+        toast.error('Gagal menghapus artikel');
+      } finally {
+        setShowDeleteAlert(false);
+        setArticleToDelete(null);
+      }
     }
   };
 
@@ -110,101 +164,110 @@ const Articles = () => {
         
         {/* Articles Table */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 text-gray-700">
-                <tr>
-                  <th className="py-3 px-4 text-left">Artikel</th>
-                  <th className="py-3 px-4 text-left">Kategori</th>
-                  <th className="py-3 px-4 text-left">Tanggal</th>
-                  <th className="py-3 px-4 text-left">Penulis</th>
-                  <th className="py-3 px-4 text-right">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {filteredArticles.length > 0 ? (
-                  filteredArticles.map((article) => (
-                    <tr key={article.id} className="hover:bg-gray-50">
-                      <td className="py-4 px-4">
-                        <div className="flex items-center">
-                          <div 
-                            className="w-12 h-12 flex-shrink-0 mr-3 bg-gray-100 rounded-md overflow-hidden"
-                          >
-                            <img 
-                              src={article.image} 
-                              alt={article.title} 
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <div className="truncate max-w-xs">
-                            <div className="font-semibold text-gray-800 truncate">
-                              {article.title}
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-antlia-blue border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+              <p className="mt-4 text-gray-600">Memuat artikel...</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 text-gray-700">
+                  <tr>
+                    <th className="py-3 px-4 text-left">Artikel</th>
+                    <th className="py-3 px-4 text-left">Kategori</th>
+                    <th className="py-3 px-4 text-left">Tanggal</th>
+                    <th className="py-3 px-4 text-left">Penulis</th>
+                    <th className="py-3 px-4 text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {filteredArticles.length > 0 ? (
+                    filteredArticles.map((article) => (
+                      <tr key={article.id} className="hover:bg-gray-50">
+                        <td className="py-4 px-4">
+                          <div className="flex items-center">
+                            <div 
+                              className="w-12 h-12 flex-shrink-0 mr-3 bg-gray-100 rounded-md overflow-hidden"
+                            >
+                              <img 
+                                src={article.image} 
+                                alt={article.title} 
+                                className="w-full h-full object-cover"
+                              />
                             </div>
-                            <div className="text-sm text-gray-500 truncate">
-                              {article.summary.substring(0, 60)}...
+                            <div className="truncate max-w-xs">
+                              <div className="font-semibold text-gray-800 truncate">
+                                {article.title}
+                              </div>
+                              <div className="text-sm text-gray-500 truncate">
+                                {article.summary.substring(0, 60)}...
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <span className="inline-flex items-center">
-                          <Tag size={14} className="mr-1 text-gray-400" />
-                          {article.category}
-                        </span>
-                      </td>
-                      <td className="py-4 px-4">
-                        <span className="inline-flex items-center">
-                          <Calendar size={14} className="mr-1 text-gray-400" />
-                          {article.date}
-                        </span>
-                      </td>
-                      <td className="py-4 px-4">
-                        <span className="inline-flex items-center">
-                          <User size={14} className="mr-1 text-gray-400" />
-                          {article.author}
-                        </span>
-                      </td>
-                      <td className="py-4 px-4 text-right">
-                        <div className="flex justify-end space-x-2">
-                          <Link 
-                            to={`/artikel/${article.id}`}
-                            className="p-2 text-gray-600 hover:text-antlia-blue rounded-md hover:bg-gray-100"
-                            title="Lihat Artikel"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Eye size={18} />
-                          </Link>
-                          
-                          <Link 
-                            to={`/admin/artikel/${article.id}`}
-                            className="p-2 text-gray-600 hover:text-antlia-blue rounded-md hover:bg-gray-100"
-                            title="Edit Artikel"
-                          >
-                            <Edit size={18} />
-                          </Link>
-                          
-                          <button
-                            onClick={() => handleDeleteClick(article.id)}
-                            className="p-2 text-gray-600 hover:text-red-500 rounded-md hover:bg-gray-100"
-                            title="Hapus Artikel"
-                          >
-                            <Trash size={18} />
-                          </button>
-                        </div>
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className="inline-flex items-center">
+                            <Tag size={14} className="mr-1 text-gray-400" />
+                            {article.category}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className="inline-flex items-center">
+                            <Calendar size={14} className="mr-1 text-gray-400" />
+                            {article.date}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className="inline-flex items-center">
+                            <User size={14} className="mr-1 text-gray-400" />
+                            {article.author}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4 text-right">
+                          <div className="flex justify-end space-x-2">
+                            <Link 
+                              to={`/artikel/${article.id}`}
+                              className="p-2 text-gray-600 hover:text-antlia-blue rounded-md hover:bg-gray-100"
+                              title="Lihat Artikel"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Eye size={18} />
+                            </Link>
+                            
+                            <Link 
+                              to={`/admin/artikel/${article.id}`}
+                              className="p-2 text-gray-600 hover:text-antlia-blue rounded-md hover:bg-gray-100"
+                              title="Edit Artikel"
+                            >
+                              <Edit size={18} />
+                            </Link>
+                            
+                            <button
+                              onClick={() => handleDeleteClick(article.id)}
+                              className="p-2 text-gray-600 hover:text-red-500 rounded-md hover:bg-gray-100"
+                              title="Hapus Artikel"
+                            >
+                              <Trash size={18} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-gray-500">
+                        {searchTerm || categoryFilter !== 'all' 
+                          ? "Tidak ada artikel yang sesuai dengan filter."
+                          : "Belum ada artikel yang dibuat."}
                       </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={5} className="py-8 text-center text-gray-500">
-                      Tidak ada artikel yang ditemukan.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
       

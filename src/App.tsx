@@ -1,15 +1,21 @@
 
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './context/AuthContext';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { Toaster } from 'sonner';
+
+// Components
+import LoadingScreen from './components/LoadingScreen';
+
+// Pages
 import Index from './pages/Index';
 import About from './pages/About';
 import Services from './pages/Services';
 import Solutions from './pages/Solutions';
+import Clients from './pages/Clients';
 import Articles from './pages/Articles';
 import ArticleDetail from './pages/ArticleDetail';
 import Contact from './pages/Contact';
+import Pricing from './pages/Pricing';
 import NotFound from './pages/NotFound';
-import Clients from './pages/Clients';
 
 // Admin Pages
 import Login from './pages/admin/Login';
@@ -17,72 +23,109 @@ import Dashboard from './pages/admin/Dashboard';
 import AdminArticles from './pages/admin/Articles';
 import ArticleCreate from './pages/admin/ArticleCreate';
 import ArticleEdit from './pages/admin/ArticleEdit';
-import Settings from './pages/admin/Settings';
+import AdminClients from './pages/admin/Clients';
 import Packages from './pages/admin/Packages';
 import Team from './pages/admin/Team';
-import AdminClients from './pages/admin/Clients';
+import Settings from './pages/admin/Settings';
 
-import { Toaster } from '@/components/ui/toaster';
-import { Toaster as SonnerToaster } from 'sonner';
+// Context
+import { DataProvider } from './context/DataContext';
+import { AuthProvider } from './context/AuthContext';
+import { SupabaseProvider } from './context/SupabaseContext';
+
+// Styles
+import './App.css';
+
+// Router
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Index />,
+  },
+  {
+    path: '/tentang',
+    element: <About />,
+  },
+  {
+    path: '/layanan',
+    element: <Services />,
+  },
+  {
+    path: '/solusi',
+    element: <Solutions />,
+  },
+  {
+    path: '/klien',
+    element: <Clients />,
+  },
+  {
+    path: '/artikel',
+    element: <Articles />,
+  },
+  {
+    path: '/artikel/:id',
+    element: <ArticleDetail />,
+  },
+  {
+    path: '/kontak',
+    element: <Contact />,
+  },
+  {
+    path: '/harga',
+    element: <Pricing />,
+  },
+  {
+    path: '/admin',
+    element: <Dashboard />,
+  },
+  {
+    path: '/admin/login',
+    element: <Login />,
+  },
+  {
+    path: '/admin/artikel',
+    element: <AdminArticles />,
+  },
+  {
+    path: '/admin/artikel/baru',
+    element: <ArticleCreate />,
+  },
+  {
+    path: '/admin/artikel/:id',
+    element: <ArticleEdit />,
+  },
+  {
+    path: '/admin/klien',
+    element: <AdminClients />,
+  },
+  {
+    path: '/admin/paket',
+    element: <Packages />,
+  },
+  {
+    path: '/admin/tim',
+    element: <Team />,
+  },
+  {
+    path: '/admin/pengaturan',
+    element: <Settings />,
+  },
+  {
+    path: '*',
+    element: <NotFound />,
+  },
+]);
 
 function App() {
-  const { isAuthenticated } = useAuth();
-
   return (
-    <>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Index />} />
-        <Route path="/tentang" element={<About />} />
-        <Route path="/layanan" element={<Services />} />
-        <Route path="/solusi" element={<Solutions />} />
-        <Route path="/klien" element={<Clients />} />
-        <Route path="/artikel" element={<Articles />} />
-        <Route path="/artikel/:slug" element={<ArticleDetail />} />
-        <Route path="/kontak" element={<Contact />} />
-
-        {/* Admin Routes */}
-        <Route path="/admin" element={<Login />} />
-        <Route 
-          path="/admin/dashboard" 
-          element={isAuthenticated ? <Dashboard /> : <Navigate to="/admin" />} 
-        />
-        <Route 
-          path="/admin/artikel" 
-          element={isAuthenticated ? <AdminArticles /> : <Navigate to="/admin" />} 
-        />
-        <Route 
-          path="/admin/artikel/baru" 
-          element={isAuthenticated ? <ArticleCreate /> : <Navigate to="/admin" />} 
-        />
-        <Route 
-          path="/admin/artikel/:id" 
-          element={isAuthenticated ? <ArticleEdit /> : <Navigate to="/admin" />} 
-        />
-        <Route 
-          path="/admin/pengaturan" 
-          element={isAuthenticated ? <Settings /> : <Navigate to="/admin" />} 
-        />
-        <Route 
-          path="/admin/packages" 
-          element={isAuthenticated ? <Packages /> : <Navigate to="/admin" />} 
-        />
-        <Route 
-          path="/admin/team" 
-          element={isAuthenticated ? <Team /> : <Navigate to="/admin" />} 
-        />
-        <Route 
-          path="/admin/clients" 
-          element={isAuthenticated ? <AdminClients /> : <Navigate to="/admin" />} 
-        />
-
-        {/* 404 Route */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-      
-      <Toaster />
-      <SonnerToaster richColors position="top-right" />
-    </>
+    <SupabaseProvider>
+      <DataProvider>
+        <AuthProvider>
+          <RouterProvider router={router} fallbackElement={<LoadingScreen />} />
+          <Toaster position="top-center" richColors closeButton />
+        </AuthProvider>
+      </DataProvider>
+    </SupabaseProvider>
   );
 }
 

@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { useData } from '@/context/DataContext';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,8 +10,22 @@ import { Check, Plus, Trash, X, Edit, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 
+interface TeamMember {
+  id: string;
+  name: string;
+  position: string;
+  bio: string;
+  photo: string;
+  socials: {
+    linkedin: string;
+    twitter: string;
+    instagram: string;
+  };
+}
+
 const Team = () => {
-  const { team, updateTeam, addTeamMember, deleteTeamMember } = useData();
+  const [team, setTeam] = useState<TeamMember[]>([]);
+  const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editedMember, setEditedMember] = useState<any>(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
@@ -27,6 +41,33 @@ const Team = () => {
     }
   });
 
+  // Fetch team members from Supabase
+  useEffect(() => {
+    fetchTeamMembers();
+  }, []);
+
+  const fetchTeamMembers = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('team_members')
+        .select('*');
+      
+      if (error) {
+        throw error;
+      }
+      
+      if (data) {
+        setTeam(data);
+      }
+    } catch (error) {
+      console.error('Error fetching team members:', error);
+      toast.error('Gagal memuat data tim');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleEdit = (id: string) => {
     const member = team.find(t => t.id === id);
     if (!member) return;
@@ -35,13 +76,36 @@ const Team = () => {
     setEditingId(id);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!editedMember) return;
     
-    updateTeam(editedMember.id, editedMember);
-    setEditingId(null);
-    setEditedMember(null);
-    toast.success('Anggota tim berhasil diperbarui!');
+    try {
+      const { data, error } = await supabase
+        .from('team_members')
+        .update({
+          name: editedMember.name,
+          position: editedMember.position,
+          bio: editedMember.bio,
+          photo: editedMember.photo,
+          socials: editedMember.socials
+        })
+        .eq('id', editedMember.id)
+        .select();
+      
+      if (error) throw error;
+      
+      // Update local state
+      setTeam(team.map(member => 
+        member.id === editedMember.id ? { ...member, ...editedMember } : member
+      ));
+      
+      setEditingId(null);
+      setEditedMember(null);
+      toast.success('Anggota tim berhasil diperbarui!');
+    } catch (error) {
+      console.error('Error updating team member:', error);
+      toast.error('Gagal memperbarui anggota tim');
+    }
   };
 
   const handleCancel = () => {
@@ -49,32 +113,65 @@ const Team = () => {
     setEditedMember(null);
   };
 
-  const handleAddMember = () => {
+  const handleAddMember = async () => {
     if (!newMember.name || !newMember.position) {
       toast.error('Nama dan jabatan harus diisi!');
       return;
     }
     
-    addTeamMember(newMember);
-    setNewMember({
-      name: '',
-      position: '',
-      bio: '',
-      photo: '/assets/placeholder.svg',
-      socials: {
-        linkedin: '',
-        twitter: '',
-        instagram: ''
+    try {
+      const { data, error } = await supabase
+        .from('team_members')
+        .insert({
+          name: newMember.name,
+          position: newMember.position,
+          bio: newMember.bio,
+          photo: newMember.photo,
+          socials: newMember.socials
+        })
+        .select();
+      
+      if (error) throw error;
+      
+      if (data) {
+        setTeam([...team, data[0]]);
       }
-    });
-    setIsAddingNew(false);
-    toast.success('Anggota tim baru berhasil ditambahkan!');
+      
+      setNewMember({
+        name: '',
+        position: '',
+        bio: '',
+        photo: '/assets/placeholder.svg',
+        socials: {
+          linkedin: '',
+          twitter: '',
+          instagram: ''
+        }
+      });
+      setIsAddingNew(false);
+      toast.success('Anggota tim baru berhasil ditambahkan!');
+    } catch (error) {
+      console.error('Error adding team member:', error);
+      toast.error('Gagal menambahkan anggota tim');
+    }
   };
 
-  const handleDeleteMember = (id: string) => {
+  const handleDeleteMember = async (id: string) => {
     if (window.confirm('Apakah Anda yakin ingin menghapus anggota tim ini?')) {
-      deleteTeamMember(id);
-      toast.success('Anggota tim berhasil dihapus!');
+      try {
+        const { error } = await supabase
+          .from('team_members')
+          .delete()
+          .eq('id', id);
+        
+        if (error) throw error;
+        
+        setTeam(team.filter(member => member.id !== id));
+        toast.success('Anggota tim berhasil dihapus!');
+      } catch (error) {
+        console.error('Error deleting team member:', error);
+        toast.error('Gagal menghapus anggota tim');
+      }
     }
   };
 
@@ -238,6 +335,14 @@ const Team = () => {
           </Button>
         </div>
 
+        {/* Loading state */}
+        {loading && (
+          <div className="text-center py-12">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-antlia-blue border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+            <p className="mt-4 text-gray-600">Memuat data tim...</p>
+          </div>
+        )}
+
         {/* Form Tambah Anggota Baru */}
         {isAddingNew && (
           <Card className="mb-6 shadow-md">
@@ -266,73 +371,82 @@ const Team = () => {
           </Card>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {team.map((member) => (
-            <Card key={member.id} className="shadow-md overflow-hidden">
-              {editingId !== member.id ? (
-                <>
-                  <div className="relative h-48">
-                    <AspectRatio ratio={3/2}>
-                      <img
-                        src={member.photo}
-                        alt={member.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </AspectRatio>
-                    <div className="absolute top-2 right-2 flex space-x-1">
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        className="bg-white h-8 w-8"
-                        onClick={() => handleEdit(member.id)}
-                      >
-                        <Edit size={16} />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        className="bg-white h-8 w-8 text-red-500 hover:text-white hover:bg-red-500"
-                        onClick={() => handleDeleteMember(member.id)}
-                      >
-                        <Trash size={16} />
-                      </Button>
+        {/* Team members grid */}
+        {!loading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {team.map((member) => (
+              <Card key={member.id} className="shadow-md overflow-hidden">
+                {editingId !== member.id ? (
+                  <>
+                    <div className="relative h-48">
+                      <AspectRatio ratio={3/2}>
+                        <img
+                          src={member.photo}
+                          alt={member.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </AspectRatio>
+                      <div className="absolute top-2 right-2 flex space-x-1">
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          className="bg-white h-8 w-8"
+                          onClick={() => handleEdit(member.id)}
+                        >
+                          <Edit size={16} />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          className="bg-white h-8 w-8 text-red-500 hover:text-white hover:bg-red-500"
+                          onClick={() => handleDeleteMember(member.id)}
+                        >
+                          <Trash size={16} />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                  <CardContent className="pt-4">
-                    <h3 className="text-lg font-bold">{member.name}</h3>
-                    <p className="text-gray-500">{member.position}</p>
-                    <p className="mt-2 text-sm text-gray-700">{member.bio}</p>
-                  </CardContent>
-                </>
-              ) : (
-                <>
-                  <CardHeader>
-                    <CardTitle>Edit Anggota Tim</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {getMemberForm(editedMember)}
-                  </CardContent>
-                  <CardFooter className="flex justify-end space-x-2">
-                    <Button
-                      variant="outline"
-                      onClick={handleCancel}
-                    >
-                      <X size={16} className="mr-1" />
-                      Batal
-                    </Button>
-                    <Button
-                      onClick={handleSave}
-                      className="bg-antlia-blue hover:bg-antlia-blue/90"
-                    >
-                      <Check size={16} className="mr-1" />
-                      Simpan
-                    </Button>
-                  </CardFooter>
-                </>
-              )}
-            </Card>
-          ))}
-        </div>
+                    <CardContent className="pt-4">
+                      <h3 className="text-lg font-bold">{member.name}</h3>
+                      <p className="text-gray-500">{member.position}</p>
+                      <p className="mt-2 text-sm text-gray-700">{member.bio}</p>
+                    </CardContent>
+                  </>
+                ) : (
+                  <>
+                    <CardHeader>
+                      <CardTitle>Edit Anggota Tim</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {getMemberForm(editedMember)}
+                    </CardContent>
+                    <CardFooter className="flex justify-end space-x-2">
+                      <Button
+                        variant="outline"
+                        onClick={handleCancel}
+                      >
+                        <X size={16} className="mr-1" />
+                        Batal
+                      </Button>
+                      <Button
+                        onClick={handleSave}
+                        className="bg-antlia-blue hover:bg-antlia-blue/90"
+                      >
+                        <Check size={16} className="mr-1" />
+                        Simpan
+                      </Button>
+                    </CardFooter>
+                  </>
+                )}
+              </Card>
+            ))}
+            
+            {team.length === 0 && !loading && !isAddingNew && (
+              <div className="col-span-full text-center py-12 bg-gray-50 rounded-lg">
+                <p className="text-gray-500">Belum ada anggota tim. Klik "Tambah Anggota" untuk menambahkan.</p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </AdminLayout>
   );

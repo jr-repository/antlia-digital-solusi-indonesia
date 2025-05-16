@@ -1,16 +1,60 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Search } from 'lucide-react';
 import Layout from '@/components/Layout';
 import ArticleCard from '@/components/ArticleCard';
 import WhatsAppButton from '@/components/WhatsAppButton';
-import { useData } from '@/context/DataContext';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+
+interface Article {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;
+  summary: string;
+  excerpt?: string;
+  date: string;
+  author: string;
+  category: string;
+  tags: string[];
+  featured: boolean;
+  image: string;
+}
 
 const Articles = () => {
-  const { articles } = useData();
+  const [articles, setArticles] = useState<Article[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [loading, setLoading] = useState(true);
+  
+  // Fetch articles from Supabase
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('articles')
+          .select('*');
+        
+        if (error) {
+          throw error;
+        }
+        
+        if (data) {
+          setArticles(data);
+        }
+      } catch (error) {
+        console.error('Error fetching articles:', error);
+        toast.error('Gagal memuat artikel. Silakan coba lagi nanti.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchArticles();
+  }, []);
 
   // Extract unique categories
   const categories = ['all', ...new Set(articles.map(article => article.category))];
@@ -92,7 +136,12 @@ const Articles = () => {
       {/* Articles Grid */}
       <section className="py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          {filteredArticles.length > 0 ? (
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-antlia-blue border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+              <p className="mt-4 text-lg text-gray-600">Memuat artikel...</p>
+            </div>
+          ) : filteredArticles.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredArticles.map((article) => (
                 <ArticleCard key={article.id} article={article} />
@@ -114,41 +163,55 @@ const Articles = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold mb-12 text-center">Artikel Pilihan</h2>
           
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <div className="md:flex">
-                <div className="md:flex-shrink-0">
-                  <img 
-                    src="/assets/featured-article.jpg" 
-                    alt="Featured Article" 
-                    className="h-48 w-full object-cover md:h-full md:w-48"
-                  />
-                </div>
-                <div className="p-8">
-                  <div className="uppercase tracking-wide text-sm text-antlia-purple font-semibold">
-                    IoT
-                  </div>
-                  <Link 
-                    to="/artikel/3"
-                    className="block mt-1 text-2xl font-bold text-gray-900 hover:text-antlia-blue transition-colors"
-                  >
-                    IoT dalam Industri Manufaktur: Transformasi Digital 4.0
-                  </Link>
-                  <p className="mt-2 text-gray-600">
-                    Bagaimana Internet of Things (IoT) mengubah lanskap industri manufaktur modern melalui otomatisasi dan analitik real-time.
-                  </p>
-                  <div className="mt-4">
-                    <Link
-                      to="/artikel/3"
-                      className="text-antlia-blue hover:text-antlia-purple transition-colors font-medium"
-                    >
-                      Baca Selengkapnya
-                    </Link>
-                  </div>
-                </div>
-              </div>
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-antlia-blue border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
             </div>
-          </div>
+          ) : (
+            <div className="max-w-4xl mx-auto">
+              {articles.filter(article => article.featured).slice(0, 1).map(article => (
+                <div key={article.id} className="bg-white rounded-lg shadow-lg overflow-hidden">
+                  <div className="md:flex">
+                    <div className="md:flex-shrink-0">
+                      <img 
+                        src={article.image || "/assets/featured-article.jpg"} 
+                        alt={article.title} 
+                        className="h-48 w-full object-cover md:h-full md:w-48"
+                      />
+                    </div>
+                    <div className="p-8">
+                      <div className="uppercase tracking-wide text-sm text-antlia-purple font-semibold">
+                        {article.category}
+                      </div>
+                      <Link 
+                        to={`/artikel/${article.id}`}
+                        className="block mt-1 text-2xl font-bold text-gray-900 hover:text-antlia-blue transition-colors"
+                      >
+                        {article.title}
+                      </Link>
+                      <p className="mt-2 text-gray-600">
+                        {article.summary}
+                      </p>
+                      <div className="mt-4">
+                        <Link
+                          to={`/artikel/${article.id}`}
+                          className="text-antlia-blue hover:text-antlia-purple transition-colors font-medium"
+                        >
+                          Baca Selengkapnya
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              
+              {articles.filter(article => article.featured).length === 0 && (
+                <div className="text-center py-8">
+                  <p className="text-gray-600">Belum ada artikel pilihan saat ini.</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
