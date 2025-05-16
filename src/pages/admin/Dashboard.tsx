@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -9,6 +10,12 @@ import {
   Calendar, 
   ArrowRight, 
   Home, 
+  FileText,
+  ArrowUp,
+  ArrowDown,
+  Plus,
+  Edit,
+  Eye
 } from 'lucide-react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { useData } from '@/context/DataContext';

@@ -1,14 +1,19 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Settings, 
   Users, 
   Package, 
-  Edit, 
-  File, 
   Home, 
   ArrowRight,
+  Check,
+  Plus,
   Trash,
+  X,
+  Edit,
+  Upload,
+  FileText
 } from 'lucide-react';
 import { useData } from '@/context/DataContext';
 import AdminLayout from '@/components/admin/AdminLayout';
@@ -16,7 +21,6 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Check, Plus, Trash, X, Edit, Upload, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
