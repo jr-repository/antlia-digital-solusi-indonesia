@@ -648,18 +648,70 @@ const sampleFooterInfo: FooterInfo = {
 };
 
 export const DataProvider = ({ children }: { children: React.ReactNode }) => {
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [services] = useState<Service[]>(sampleServices);
-  const [pricing, setPricing] = useState<PricingPlan[]>(samplePricing);
-  const [clients, setClients] = useState<Client[]>(sampleClients);
-  const [testimonials, setTestimonials] = useState<Testimonial[]>(sampleTestimonials);
-  const [team, setTeam] = useState<TeamMember[]>(sampleTeam);
-  const [footerInfo, setFooterInfo] = useState<FooterInfo>(sampleFooterInfo);
+  // Initialize state from localStorage or use sample data if not available
+  const [articles, setArticles] = useState<Article[]>(() => {
+    const savedArticles = localStorage.getItem('antlia_articles');
+    return savedArticles ? JSON.parse(savedArticles) : sampleArticles;
+  });
+  
+  const [services, setServices] = useState<Service[]>(() => {
+    const savedServices = localStorage.getItem('antlia_services');
+    return savedServices ? JSON.parse(savedServices) : sampleServices;
+  });
+  
+  const [pricing, setPricing] = useState<PricingPlan[]>(() => {
+    const savedPricing = localStorage.getItem('antlia_pricing');
+    return savedPricing ? JSON.parse(savedPricing) : samplePricing;
+  });
+  
+  const [clients, setClients] = useState<Client[]>(() => {
+    const savedClients = localStorage.getItem('antlia_clients');
+    return savedClients ? JSON.parse(savedClients) : sampleClients;
+  });
+  
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(() => {
+    const savedTestimonials = localStorage.getItem('antlia_testimonials');
+    return savedTestimonials ? JSON.parse(savedTestimonials) : sampleTestimonials;
+  });
+  
+  const [team, setTeam] = useState<TeamMember[]>(() => {
+    const savedTeam = localStorage.getItem('antlia_team');
+    return savedTeam ? JSON.parse(savedTeam) : sampleTeam;
+  });
+  
+  const [footerInfo, setFooterInfo] = useState<FooterInfo>(() => {
+    const savedFooterInfo = localStorage.getItem('antlia_footerInfo');
+    return savedFooterInfo ? JSON.parse(savedFooterInfo) : sampleFooterInfo;
+  });
 
-  // Initialize data
+  // Save to localStorage whenever data changes
   useEffect(() => {
-    setArticles(sampleArticles);
-  }, []);
+    localStorage.setItem('antlia_articles', JSON.stringify(articles));
+  }, [articles]);
+
+  useEffect(() => {
+    localStorage.setItem('antlia_services', JSON.stringify(services));
+  }, [services]);
+
+  useEffect(() => {
+    localStorage.setItem('antlia_pricing', JSON.stringify(pricing));
+  }, [pricing]);
+
+  useEffect(() => {
+    localStorage.setItem('antlia_clients', JSON.stringify(clients));
+  }, [clients]);
+
+  useEffect(() => {
+    localStorage.setItem('antlia_testimonials', JSON.stringify(testimonials));
+  }, [testimonials]);
+
+  useEffect(() => {
+    localStorage.setItem('antlia_team', JSON.stringify(team));
+  }, [team]);
+
+  useEffect(() => {
+    localStorage.setItem('antlia_footerInfo', JSON.stringify(footerInfo));
+  }, [footerInfo]);
 
   // Article functions
   const addArticle = (article: Omit<Article, 'id'>) => {
