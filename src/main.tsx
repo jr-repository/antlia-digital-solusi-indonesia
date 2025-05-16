@@ -6,6 +6,7 @@ import App from './App.tsx';
 import './index.css';
 import LoadingScreen from './components/LoadingScreen.tsx';
 import { AuthProvider } from './context/AuthContext';
+import { DataProvider } from './context/DataContext';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
@@ -40,7 +41,9 @@ const AppWithLoading = () => {
       {!isLoading && (
         <BrowserRouter>
           <AuthProvider>
-            <App />
+            <DataProvider>
+              <App />
+            </DataProvider>
           </AuthProvider>
         </BrowserRouter>
       )}
