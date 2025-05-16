@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -483,7 +482,7 @@ const Clients = () => {
               Klien & Studi Kasus
             </TabsTrigger>
             <TabsTrigger value="testimonials" className="flex items-center">
-              <File size={18} className="mr-2" />
+              <FileText size={18} className="mr-2" />
               Testimonial
             </TabsTrigger>
           </TabsList>
