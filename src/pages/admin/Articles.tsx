@@ -1,9 +1,8 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Search, Trash, Edit, Eye, Calendar, User, Tag } from 'lucide-react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { supabase } from '@/integrations/supabase/client';
+import { useSupabase } from '@/context/SupabaseContext';
 import { useToast } from '@/components/ui/use-toast';
 import { toast } from 'sonner';
 import {
@@ -17,57 +16,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-interface Article {
-  id: string;
-  title: string;
-  slug: string;
-  content: string;
-  summary: string;
-  excerpt?: string;
-  date: string;
-  author: string;
-  category: string;
-  tags: string[];
-  featured: boolean;
-  image: string;
-}
-
 const Articles = () => {
+  const { articles, refreshArticles, loading } = useSupabase();
   const { toast: uiToast } = useToast();
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [articleToDelete, setArticleToDelete] = useState<string | null>(null);
-
-  // Fetch articles from Supabase
-  useEffect(() => {
-    fetchArticles();
-  }, []);
-
-  const fetchArticles = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('articles')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) {
-        throw error;
-      }
-      
-      if (data) {
-        setArticles(data);
-      }
-    } catch (error) {
-      console.error('Error fetching articles:', error);
-      toast.error('Gagal memuat artikel');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Get unique categories
   const categories = ['all', ...new Set(articles.map(article => article.category))];
@@ -97,7 +52,7 @@ const Articles = () => {
         
         if (error) throw error;
         
-        setArticles(articles.filter(article => article.id !== articleToDelete));
+        await refreshArticles();
         toast.success('Artikel berhasil dihapus');
       } catch (error) {
         console.error('Error deleting article:', error);
@@ -164,7 +119,7 @@ const Articles = () => {
         
         {/* Articles Table */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          {loading ? (
+          {loading.articles ? (
             <div className="text-center py-12">
               <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-antlia-blue border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
               <p className="mt-4 text-gray-600">Memuat artikel...</p>

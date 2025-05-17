@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Check, Plus, Trash, X, Edit, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { Json } from '@/integrations/supabase/types';
 
 interface TeamMember {
   id: string;
@@ -23,13 +24,25 @@ interface TeamMember {
   };
 }
 
+interface TeamMemberFromDB {
+  id: string;
+  name: string;
+  position: string;
+  bio: string;
+  photo: string;
+  socials: Json;
+  created_at: string;
+  updated_at: string;
+}
+
 const Team = () => {
   const [team, setTeam] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editedMember, setEditedMember] = useState<any>(null);
+  const [editedMember, setEditedMember] = useState<TeamMember | null>(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
-  const [newMember, setNewMember] = useState({
+  const [newMember, setNewMember] = useState<TeamMember>({
+    id: '',
     name: '',
     position: '',
     bio: '',
@@ -58,7 +71,20 @@ const Team = () => {
       }
       
       if (data) {
-        setTeam(data);
+        // Transform the data to match our TeamMember interface
+        const formattedTeam = data.map((member: TeamMemberFromDB) => ({
+          id: member.id,
+          name: member.name,
+          position: member.position,
+          bio: member.bio,
+          photo: member.photo,
+          socials: member.socials as unknown as {
+            linkedin: string;
+            twitter: string;
+            instagram: string;
+          }
+        }));
+        setTeam(formattedTeam);
       }
     } catch (error) {
       console.error('Error fetching team members:', error);
@@ -87,7 +113,7 @@ const Team = () => {
           position: editedMember.position,
           bio: editedMember.bio,
           photo: editedMember.photo,
-          socials: editedMember.socials
+          socials: editedMember.socials as any
         })
         .eq('id', editedMember.id)
         .select();
@@ -96,7 +122,7 @@ const Team = () => {
       
       // Update local state
       setTeam(team.map(member => 
-        member.id === editedMember.id ? { ...member, ...editedMember } : member
+        member.id === editedMember.id ? editedMember : member
       ));
       
       setEditingId(null);
@@ -127,17 +153,31 @@ const Team = () => {
           position: newMember.position,
           bio: newMember.bio,
           photo: newMember.photo,
-          socials: newMember.socials
+          socials: newMember.socials as any
         })
         .select();
       
       if (error) throw error;
       
       if (data) {
-        setTeam([...team, data[0]]);
+        // Transform the data to match our TeamMember interface
+        const newTeamMember: TeamMember = {
+          id: data[0].id,
+          name: data[0].name,
+          position: data[0].position,
+          bio: data[0].bio,
+          photo: data[0].photo,
+          socials: data[0].socials as unknown as {
+            linkedin: string;
+            twitter: string;
+            instagram: string;
+          }
+        };
+        setTeam([...team, newTeamMember]);
       }
       
       setNewMember({
+        id: '',
         name: '',
         position: '',
         bio: '',
@@ -417,7 +457,7 @@ const Team = () => {
                       <CardTitle>Edit Anggota Tim</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      {getMemberForm(editedMember)}
+                      {editedMember && getMemberForm(editedMember)}
                     </CardContent>
                     <CardFooter className="flex justify-end space-x-2">
                       <Button
@@ -450,6 +490,151 @@ const Team = () => {
       </div>
     </AdminLayout>
   );
+  
+  function getMemberForm(member: TeamMember, isNew = false) {
+    return (
+      <>
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor={`photo-${isNew ? 'new' : member.id}`}>Foto</Label>
+            <div className="mt-1 flex items-center">
+              <div className="w-24 h-24 rounded-md overflow-hidden border">
+                <AspectRatio ratio={1/1}>
+                  <img src={member.photo} alt="Preview" className="object-cover w-full h-full" />
+                </AspectRatio>
+              </div>
+              <Button variant="outline" size="sm" className="ml-4">
+                <Upload size={16} className="mr-1" />
+                Upload Foto
+              </Button>
+            </div>
+          </div>
+          
+          <div>
+            <Label htmlFor={`name-${isNew ? 'new' : member.id}`}>Nama</Label>
+            <Input
+              id={`name-${isNew ? 'new' : member.id}`}
+              value={member.name}
+              onChange={(e) => {
+                if (isNew) {
+                  setNewMember({ ...newMember, name: e.target.value });
+                } else {
+                  setEditedMember(editedMember ? { ...editedMember, name: e.target.value } : null);
+                }
+              }}
+              className="mt-1"
+            />
+          </div>
+          
+          <div>
+            <Label htmlFor={`position-${isNew ? 'new' : member.id}`}>Jabatan</Label>
+            <Input
+              id={`position-${isNew ? 'new' : member.id}`}
+              value={member.position}
+              onChange={(e) => {
+                if (isNew) {
+                  setNewMember({ ...newMember, position: e.target.value });
+                } else {
+                  setEditedMember(editedMember ? { ...editedMember, position: e.target.value } : null);
+                }
+              }}
+              className="mt-1"
+            />
+          </div>
+          
+          <div>
+            <Label htmlFor={`bio-${isNew ? 'new' : member.id}`}>Biografi</Label>
+            <Input
+              id={`bio-${isNew ? 'new' : member.id}`}
+              value={member.bio}
+              onChange={(e) => {
+                if (isNew) {
+                  setNewMember({ ...newMember, bio: e.target.value });
+                } else {
+                  setEditedMember(editedMember ? { ...editedMember, bio: e.target.value } : null);
+                }
+              }}
+              className="mt-1"
+            />
+          </div>
+          
+          <div>
+            <Label>Media Sosial</Label>
+            <div className="space-y-2 mt-1">
+              <div>
+                <Label htmlFor={`linkedin-${isNew ? 'new' : member.id}`} className="text-xs">LinkedIn</Label>
+                <Input
+                  id={`linkedin-${isNew ? 'new' : member.id}`}
+                  value={member.socials.linkedin}
+                  onChange={(e) => {
+                    if (isNew) {
+                      setNewMember({
+                        ...newMember,
+                        socials: { ...newMember.socials, linkedin: e.target.value }
+                      });
+                    } else {
+                      setEditedMember(editedMember ? {
+                        ...editedMember,
+                        socials: { ...editedMember.socials, linkedin: e.target.value }
+                      } : null);
+                    }
+                  }}
+                  placeholder="https://linkedin.com/in/username"
+                  className="mt-1"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor={`twitter-${isNew ? 'new' : member.id}`} className="text-xs">Twitter</Label>
+                <Input
+                  id={`twitter-${isNew ? 'new' : member.id}`}
+                  value={member.socials.twitter}
+                  onChange={(e) => {
+                    if (isNew) {
+                      setNewMember({
+                        ...newMember,
+                        socials: { ...newMember.socials, twitter: e.target.value }
+                      });
+                    } else {
+                      setEditedMember(editedMember ? {
+                        ...editedMember,
+                        socials: { ...editedMember.socials, twitter: e.target.value }
+                      } : null);
+                    }
+                  }}
+                  placeholder="https://twitter.com/username"
+                  className="mt-1"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor={`instagram-${isNew ? 'new' : member.id}`} className="text-xs">Instagram</Label>
+                <Input
+                  id={`instagram-${isNew ? 'new' : member.id}`}
+                  value={member.socials.instagram}
+                  onChange={(e) => {
+                    if (isNew) {
+                      setNewMember({
+                        ...newMember,
+                        socials: { ...newMember.socials, instagram: e.target.value }
+                      });
+                    } else {
+                      setEditedMember(editedMember ? {
+                        ...editedMember,
+                        socials: { ...editedMember.socials, instagram: e.target.value }
+                      } : null);
+                    }
+                  }}
+                  placeholder="https://instagram.com/username"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
 };
 
 export default Team;

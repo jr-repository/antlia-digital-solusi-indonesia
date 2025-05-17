@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { Json } from '@/integrations/supabase/types';
 
 // Types
 export interface Article {
@@ -173,7 +174,7 @@ export const SupabaseProvider = ({ children }: { children: React.ReactNode }) =>
       }
       
       if (data) {
-        setArticles(data);
+        setArticles(data as Article[]);
       }
     } catch (error) {
       console.error('Error fetching articles:', error);
@@ -194,7 +195,7 @@ export const SupabaseProvider = ({ children }: { children: React.ReactNode }) =>
       }
       
       if (data) {
-        setServices(data);
+        setServices(data as Service[]);
       }
     } catch (error) {
       console.error('Error fetching services:', error);
@@ -215,7 +216,7 @@ export const SupabaseProvider = ({ children }: { children: React.ReactNode }) =>
       }
       
       if (data) {
-        setPricing(data);
+        setPricing(data as PricingPlan[]);
       }
     } catch (error) {
       console.error('Error fetching pricing plans:', error);
@@ -236,7 +237,25 @@ export const SupabaseProvider = ({ children }: { children: React.ReactNode }) =>
       }
       
       if (data) {
-        setClients(data);
+        // Transform the JSON data into the required format
+        const formattedClients = data.map(client => ({
+          id: client.id,
+          name: client.name,
+          logo: client.logo,
+          industry: client.industry,
+          location: client.location,
+          implementation: client.implementation,
+          case_study: client.case_study ? client.case_study as unknown as {
+            title: string;
+            description: string;
+            challenge: string;
+            solution: string;
+            result: string;
+            image: string;
+          } : undefined
+        }));
+        
+        setClients(formattedClients);
       }
     } catch (error) {
       console.error('Error fetching clients:', error);
@@ -257,7 +276,7 @@ export const SupabaseProvider = ({ children }: { children: React.ReactNode }) =>
       }
       
       if (data) {
-        setTestimonials(data);
+        setTestimonials(data as Testimonial[]);
       }
     } catch (error) {
       console.error('Error fetching testimonials:', error);
@@ -278,7 +297,21 @@ export const SupabaseProvider = ({ children }: { children: React.ReactNode }) =>
       }
       
       if (data) {
-        setTeam(data);
+        // Transform the JSON data into the required format
+        const formattedTeam = data.map(member => ({
+          id: member.id,
+          name: member.name,
+          position: member.position,
+          bio: member.bio,
+          photo: member.photo,
+          socials: member.socials as unknown as {
+            linkedin: string;
+            twitter: string;
+            instagram: string;
+          }
+        }));
+        
+        setTeam(formattedTeam);
       }
     } catch (error) {
       console.error('Error fetching team members:', error);
@@ -301,7 +334,38 @@ export const SupabaseProvider = ({ children }: { children: React.ReactNode }) =>
       }
       
       if (data) {
-        setFooterInfo(data);
+        // Transform the JSON data into the required format
+        const formattedFooterInfo = {
+          id: data.id,
+          company_info: data.company_info as unknown as {
+            description: string;
+            socialLinks: {
+              instagram: string;
+              linkedin: string;
+            }
+          },
+          quick_links: data.quick_links as unknown as {
+            id: string;
+            name: string;
+            url: string;
+          }[],
+          products: data.products as unknown as {
+            id: string;
+            name: string;
+            url: string;
+          }[],
+          contact_info: data.contact_info as unknown as {
+            address: string;
+            phone: string;
+            officeHours: {
+              weekday: string;
+              saturday: string;
+              support: string;
+            }
+          }
+        };
+        
+        setFooterInfo(formattedFooterInfo);
       }
     } catch (error) {
       console.error('Error fetching footer info:', error);

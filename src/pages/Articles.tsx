@@ -7,55 +7,13 @@ import ArticleCard from '@/components/ArticleCard';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-
-interface Article {
-  id: string;
-  title: string;
-  slug: string;
-  content: string;
-  summary: string;
-  excerpt?: string;
-  date: string;
-  author: string;
-  category: string;
-  tags: string[];
-  featured: boolean;
-  image: string;
-}
+import { useSupabase } from '@/context/SupabaseContext';
 
 const Articles = () => {
-  const [articles, setArticles] = useState<Article[]>([]);
+  const { articles, loading } = useSupabase();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [loading, setLoading] = useState(true);
   
-  // Fetch articles from Supabase
-  useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        setLoading(true);
-        const { data, error } = await supabase
-          .from('articles')
-          .select('*');
-        
-        if (error) {
-          throw error;
-        }
-        
-        if (data) {
-          setArticles(data);
-        }
-      } catch (error) {
-        console.error('Error fetching articles:', error);
-        toast.error('Gagal memuat artikel. Silakan coba lagi nanti.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchArticles();
-  }, []);
-
   // Extract unique categories
   const categories = ['all', ...new Set(articles.map(article => article.category))];
 
@@ -136,7 +94,7 @@ const Articles = () => {
       {/* Articles Grid */}
       <section className="py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          {loading ? (
+          {loading.articles ? (
             <div className="text-center py-12">
               <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-antlia-blue border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
               <p className="mt-4 text-lg text-gray-600">Memuat artikel...</p>
@@ -144,7 +102,7 @@ const Articles = () => {
           ) : filteredArticles.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredArticles.map((article) => (
-                <ArticleCard key={article.id} article={article} />
+                <ArticleCard key={article.id} article={article as any} />
               ))}
             </div>
           ) : (
@@ -163,7 +121,7 @@ const Articles = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold mb-12 text-center">Artikel Pilihan</h2>
           
-          {loading ? (
+          {loading.articles ? (
             <div className="text-center py-12">
               <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-antlia-blue border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
             </div>
