@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { 
   Menu, X, LayoutDashboard, FileText, Settings, LogOut,
   ChevronDown, ChevronRight, ChevronLeft, Users, PackageOpen, Building
@@ -15,18 +15,17 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { logout, isAuthenticated } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
   // If user is not authenticated, redirect to login
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/admin');
+      window.location.href = '/admin/login';
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated]);
 
   const menuItems = [
     {

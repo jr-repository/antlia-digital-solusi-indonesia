@@ -1,6 +1,5 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
 
 type User = {
@@ -20,7 +19,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   const isAuthenticated = !!user?.isAuthenticated;
 
@@ -62,7 +60,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('antlia_user');
-    navigate('/admin');
+    
+    // Instead of using navigate, we'll use window.location
+    window.location.href = '/admin';
+    
     toast({
       title: 'Logout Berhasil',
       description: 'Anda telah keluar dari sistem',

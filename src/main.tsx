@@ -1,7 +1,6 @@
 
 import { createRoot } from 'react-dom/client';
 import { useState, useEffect } from 'react';
-import { BrowserRouter } from 'react-router-dom';
 import App from './App.tsx';
 import './index.css';
 import LoadingScreen from './components/LoadingScreen.tsx';
@@ -39,13 +38,7 @@ const AppWithLoading = () => {
     <>
       {isLoading && <LoadingScreen onLoadComplete={() => setIsLoading(false)} />}
       {!isLoading && (
-        <BrowserRouter>
-          <AuthProvider>
-            <DataProvider>
-              <App />
-            </DataProvider>
-          </AuthProvider>
-        </BrowserRouter>
+        <App />
       )}
     </>
   );
