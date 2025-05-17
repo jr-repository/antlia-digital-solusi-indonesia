@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem('antlia_user');
     
     // Instead of using navigate, we'll use window.location
-    window.location.href = '/admin';
+    window.location.href = '/admin/login';
     
     toast({
       title: 'Logout Berhasil',
