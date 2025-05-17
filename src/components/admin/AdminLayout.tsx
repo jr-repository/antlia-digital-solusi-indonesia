@@ -40,17 +40,17 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     },
     {
       name: 'Paket & Layanan',
-      path: '/admin/packages',
+      path: '/admin/paket',
       icon: <PackageOpen size={20} />,
     },
     {
       name: 'Tim Kami',
-      path: '/admin/team',
+      path: '/admin/tim',
       icon: <Users size={20} />,
     },
     {
       name: 'Klien & Studi Kasus',
-      path: '/admin/clients',
+      path: '/admin/klien',
       icon: <Building size={20} />,
     },
     {

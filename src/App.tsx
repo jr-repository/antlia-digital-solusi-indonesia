@@ -38,6 +38,7 @@ import './App.css';
 
 // Router
 const router = createBrowserRouter([
+  // Public Routes
   {
     path: '/',
     element: <Index />,
@@ -74,17 +75,19 @@ const router = createBrowserRouter([
     path: '/harga',
     element: <Pricing />,
   },
+  
+  // Admin Routes
   {
     path: '/admin',
     element: <Login />,
   },
   {
-    path: '/admin/dashboard',
-    element: <Dashboard />,
-  },
-  {
     path: '/admin/login',
     element: <Login />,
+  },
+  {
+    path: '/admin/dashboard',
+    element: <Dashboard />,
   },
   {
     path: '/admin/artikel',
@@ -114,6 +117,8 @@ const router = createBrowserRouter([
     path: '/admin/pengaturan',
     element: <Settings />,
   },
+  
+  // Catch-all for 404
   {
     path: '*',
     element: <NotFound />,
