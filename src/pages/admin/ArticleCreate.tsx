@@ -5,15 +5,13 @@ import { ArrowLeft, Save, Image, Upload } from 'lucide-react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import RichTextEditor from '@/components/admin/RichTextEditor';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 
 const ArticleCreate = () => {
   const navigate = useNavigate();
-  const { toast: uiToast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -26,6 +24,7 @@ const ArticleCreate = () => {
     category: 'ERP',
     tags: [''],
     featured: false,
+    published: false,
     excerpt: ''
   });
 
@@ -76,6 +75,14 @@ const ArticleCreate = () => {
       };
       reader.readAsDataURL(file);
     }
+  };
+  
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: checked,
+    }));
   };
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -306,9 +313,39 @@ const ArticleCreate = () => {
                   </select>
                 </div>
                 
+                <div className="mb-6 space-y-4">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="published"
+                      name="published"
+                      checked={formData.published}
+                      onChange={handleCheckboxChange}
+                      className="w-4 h-4 text-antlia-blue border-gray-300 rounded focus:ring-antlia-blue"
+                    />
+                    <label htmlFor="published" className="ml-2 block text-gray-700">
+                      Publikasikan sekarang
+                    </label>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="featured"
+                      name="featured"
+                      checked={formData.featured}
+                      onChange={handleCheckboxChange}
+                      className="w-4 h-4 text-antlia-blue border-gray-300 rounded focus:ring-antlia-blue"
+                    />
+                    <label htmlFor="featured" className="ml-2 block text-gray-700">
+                      Jadikan artikel pilihan
+                    </label>
+                  </div>
+                </div>
+                
                 <div className="mt-6 flex justify-end">
                   <Badge variant="outline" className="bg-gray-50">
-                    Draft
+                    {formData.published ? "Akan Dipublikasikan" : "Draft"}
                   </Badge>
                 </div>
               </div>

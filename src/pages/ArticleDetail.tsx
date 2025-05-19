@@ -4,39 +4,78 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { ChevronRight, Calendar, User, Tag, ArrowLeft } from 'lucide-react';
 import Layout from '@/components/Layout';
 import WhatsAppButton from '@/components/WhatsAppButton';
-import { useData } from '@/context/DataContext';
-import { Article } from '@/context/DataContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useSupabase } from '@/context/SupabaseContext';
+import { Article } from '@/context/SupabaseContext';
 
 const ArticleDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { articles, getArticleById } = useData();
-  const [article, setArticle] = useState<Article | undefined>(undefined);
+  const { articles } = useSupabase();
+  const [article, setArticle] = useState<Article | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
 
   useEffect(() => {
-    if (id) {
-      const currentArticle = getArticleById(id);
-      if (currentArticle) {
-        setArticle(currentArticle);
+    const fetchArticleDetails = async () => {
+      if (!id) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('articles')
+          .select('*')
+          .eq('id', id)
+          .single();
+          
+        if (error) throw error;
         
-        // Find related articles in the same category
-        const related = articles
-          .filter(a => a.id !== id && a.category === currentArticle.category)
-          .slice(0, 3);
-        
-        setRelatedArticles(related);
-      } else {
+        if (data) {
+          // Only show published articles to public
+          if (!data.published) {
+            navigate('/artikel', { replace: true });
+            return;
+          }
+          
+          setArticle(data as Article);
+          
+          // Find related articles in the same category
+          const related = articles
+            .filter(a => a.id !== id && a.category === data.category && a.published)
+            .slice(0, 3);
+          
+          setRelatedArticles(related);
+        } else {
+          navigate('/artikel', { replace: true });
+        }
+      } catch (error) {
+        console.error('Error fetching article:', error);
         navigate('/artikel', { replace: true });
+      } finally {
+        setIsLoading(false);
       }
-    }
-  }, [id, articles, getArticleById, navigate]);
+    };
+    
+    fetchArticleDetails();
+  }, [id, navigate, articles]);
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-16 flex justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-solid border-antlia-blue border-r-transparent" />
+        </div>
+      </Layout>
+    );
+  }
 
   if (!article) {
     return (
       <Layout>
-        <div className="container mx-auto px-4 py-16">
-          <p className="text-center">Loading...</p>
+        <div className="container mx-auto px-4 py-16 text-center">
+          <p>Article not found.</p>
+          <Link to="/artikel" className="mt-4 inline-block text-antlia-blue hover:underline">
+            Back to Articles
+          </Link>
         </div>
       </Layout>
     );
@@ -149,7 +188,7 @@ const ArticleDetail = () => {
                 {relatedArticles.length > 0 ? (
                   <div className="space-y-4">
                     {relatedArticles.map((relatedArticle) => (
-                      <div key={relatedArticle.id} className="border-b border-gray-200 pb-4 last:border-0 last:pb-0">
+                      <div key={relatedArticle.id} className="border-b border-gray-200 pb-4 last:border-0 last:pb-0 text-left">
                         <Link 
                           to={`/artikel/${relatedArticle.id}`}
                           className="block text-lg font-semibold mb-1 hover:text-antlia-blue transition-colors"
@@ -171,8 +210,8 @@ const ArticleDetail = () => {
               {/* Categories */}
               <div className="bg-antlia-light p-6 rounded-lg mb-8">
                 <h3 className="text-xl font-bold mb-4">Kategori</h3>
-                <div className="space-y-2">
-                  {Array.from(new Set(articles.map(a => a.category))).map((category) => (
+                <div className="space-y-2 text-left">
+                  {Array.from(new Set(articles.filter(a => a.published).map(a => a.category))).map((category) => (
                     <Link
                       key={category}
                       to={`/artikel?kategori=${category}`}

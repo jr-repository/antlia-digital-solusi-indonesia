@@ -4,17 +4,19 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Image, Upload } from 'lucide-react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import RichTextEditor from '@/components/admin/RichTextEditor';
-import { useData } from '@/context/DataContext';
-import { useToast } from '@/components/ui/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
+import { useSupabase } from '@/context/SupabaseContext';
 
 const ArticleEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { getArticleById, updateArticle } = useData();
-  const { toast } = useToast();
+  const { articles, refreshArticles } = useSupabase();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   const [formData, setFormData] = useState({
     title: '',
@@ -24,36 +26,63 @@ const ArticleEdit = () => {
     image: '',
     author: '',
     category: '',
-    date: '',
+    tags: [''],
+    featured: false,
+    published: false,
+    excerpt: '',
+    date: ''
   });
-  
+
   // Local state for image preview
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   
   // Load article data
   useEffect(() => {
-    if (id) {
-      const article = getArticleById(id);
-      if (article) {
-        setFormData({
-          title: article.title,
-          slug: article.slug,
-          summary: article.summary,
-          content: article.content,
-          image: article.image,
-          author: article.author,
-          category: article.category,
-          date: article.date,
-        });
-        
-        if (article.image) {
-          setImagePreview(article.image);
+    const fetchArticle = async () => {
+      if (!id) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('articles')
+          .select('*')
+          .eq('id', id)
+          .single();
+
+        if (error) {
+          throw error;
         }
-      } else {
+
+        if (data) {
+          setFormData({
+            title: data.title || '',
+            slug: data.slug || '',
+            summary: data.summary || '',
+            content: data.content || '',
+            image: data.image || '',
+            author: data.author || '',
+            category: data.category || '',
+            tags: data.tags || [''],
+            featured: data.featured || false,
+            published: data.published || false,
+            excerpt: data.excerpt || '',
+            date: data.date || ''
+          });
+
+          if (data.image) {
+            setImagePreview(data.image);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching article:', error);
+        toast.error('Gagal memuat data artikel');
         navigate('/admin/artikel', { replace: true });
+      } finally {
+        setIsLoading(false);
       }
-    }
-  }, [id, getArticleById, navigate]);
+    };
+
+    fetchArticle();
+  }, [id, navigate]);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -101,32 +130,67 @@ const ArticleEdit = () => {
     }
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: checked,
+    }));
+  };
+  
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!id) return;
     
     // Validate form
     if (!formData.title || !formData.summary || !formData.content) {
-      toast({
-        title: 'Error',
-        description: 'Harap isi semua field yang wajib.',
-        variant: 'destructive',
-      });
+      toast.error('Harap isi semua field yang wajib.');
       return;
     }
     
-    if (id) {
-      // Update the article
-      updateArticle(id, formData);
+    try {
+      setIsSubmitting(true);
+
+      // Prepare data for update
+      const updateData = {
+        ...formData,
+        updated_at: new Date().toISOString(),
+      };
       
-      toast({
-        title: 'Artikel Diperbarui',
-        description: 'Artikel telah berhasil diperbarui.',
-      });
+      // Update in Supabase
+      const { error } = await supabase
+        .from('articles')
+        .update(updateData)
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      toast.success('Artikel berhasil diperbarui');
+      
+      // Refresh article data in context
+      refreshArticles();
       
       // Navigate back to articles list
       navigate('/admin/artikel');
+      
+    } catch (error) {
+      console.error('Error updating article:', error);
+      toast.error('Gagal memperbarui artikel. Silakan coba lagi.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <AdminLayout>
+        <div className="flex justify-center items-center h-screen">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-solid border-antlia-blue border-r-transparent" />
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
@@ -150,9 +214,19 @@ const ArticleEdit = () => {
             type="button"
             onClick={handleSubmit}
             className="bg-antlia-blue hover:bg-antlia-blue hover:opacity-90 text-white"
+            disabled={isSubmitting}
           >
-            <Save size={16} className="mr-2" />
-            Simpan Perubahan
+            {isSubmitting ? (
+              <>
+                <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-solid border-white border-r-transparent"></div>
+                Menyimpan...
+              </>
+            ) : (
+              <>
+                <Save size={16} className="mr-2" />
+                Simpan Perubahan
+              </>
+            )}
           </Button>
         </div>
         
@@ -315,9 +389,39 @@ const ArticleEdit = () => {
                   />
                 </div>
                 
+                <div className="mb-6 space-y-4">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="published"
+                      name="published"
+                      checked={formData.published}
+                      onChange={handleCheckboxChange}
+                      className="w-4 h-4 text-antlia-blue border-gray-300 rounded focus:ring-antlia-blue"
+                    />
+                    <label htmlFor="published" className="ml-2 block text-gray-700">
+                      Publikasikan artikel
+                    </label>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="featured"
+                      name="featured"
+                      checked={formData.featured}
+                      onChange={handleCheckboxChange}
+                      className="w-4 h-4 text-antlia-blue border-gray-300 rounded focus:ring-antlia-blue"
+                    />
+                    <label htmlFor="featured" className="ml-2 block text-gray-700">
+                      Jadikan artikel pilihan
+                    </label>
+                  </div>
+                </div>
+                
                 <div className="mt-6 flex justify-end">
-                  <Badge variant="outline" className="bg-gray-50">
-                    Dipublikasikan
+                  <Badge variant="outline" className={`${formData.published ? 'bg-green-50 text-green-600' : 'bg-gray-50'}`}>
+                    {formData.published ? "Diterbitkan" : "Draft"}
                   </Badge>
                 </div>
               </div>

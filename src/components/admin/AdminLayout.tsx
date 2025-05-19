@@ -1,9 +1,9 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation, Navigate } from 'react-router-dom';
 import { 
-  Menu, X, LayoutDashboard, FileText, Settings, LogOut,
-  ChevronDown, ChevronRight, ChevronLeft, Users, PackageOpen, Building
+  Menu, X, LayoutDashboard, FileText, 
+  LogOut, ChevronRight, ChevronLeft
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
@@ -35,26 +35,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       name: 'Artikel',
       path: '/admin/artikel',
       icon: <FileText size={20} />,
-    },
-    {
-      name: 'Paket & Layanan',
-      path: '/admin/paket',
-      icon: <PackageOpen size={20} />,
-    },
-    {
-      name: 'Tim Kami',
-      path: '/admin/tim',
-      icon: <Users size={20} />,
-    },
-    {
-      name: 'Klien & Studi Kasus',
-      path: '/admin/klien',
-      icon: <Building size={20} />,
-    },
-    {
-      name: 'Pengaturan',
-      path: '/admin/pengaturan',
-      icon: <Settings size={20} />,
     },
   ];
 

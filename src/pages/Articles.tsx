@@ -1,12 +1,10 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Search } from 'lucide-react';
 import Layout from '@/components/Layout';
 import ArticleCard from '@/components/ArticleCard';
 import WhatsAppButton from '@/components/WhatsAppButton';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 import { useSupabase } from '@/context/SupabaseContext';
 
 const Articles = () => {
@@ -14,11 +12,14 @@ const Articles = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   
+  // Get only published articles for public view
+  const publishedArticles = articles.filter(article => article.published);
+  
   // Extract unique categories
-  const categories = ['all', ...new Set(articles.map(article => article.category))];
+  const categories = ['all', ...new Set(publishedArticles.map(article => article.category))];
 
   // Filter articles by search term and category
-  const filteredArticles = articles.filter(article => {
+  const filteredArticles = publishedArticles.filter(article => {
     const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       article.content.toLowerCase().includes(searchTerm.toLowerCase());
     
@@ -127,7 +128,7 @@ const Articles = () => {
             </div>
           ) : (
             <div className="max-w-4xl mx-auto">
-              {articles.filter(article => article.featured).slice(0, 1).map(article => (
+              {publishedArticles.filter(article => article.featured).slice(0, 1).map(article => (
                 <div key={article.id} className="bg-white rounded-lg shadow-lg overflow-hidden">
                   <div className="md:flex">
                     <div className="md:flex-shrink-0">
@@ -137,7 +138,7 @@ const Articles = () => {
                         className="h-48 w-full object-cover md:h-full md:w-48"
                       />
                     </div>
-                    <div className="p-8">
+                    <div className="p-8 text-left">
                       <div className="uppercase tracking-wide text-sm text-antlia-purple font-semibold">
                         {article.category}
                       </div>
@@ -163,7 +164,7 @@ const Articles = () => {
                 </div>
               ))}
               
-              {articles.filter(article => article.featured).length === 0 && (
+              {publishedArticles.filter(article => article.featured).length === 0 && (
                 <div className="text-center py-8">
                   <p className="text-gray-600">Belum ada artikel pilihan saat ini.</p>
                 </div>

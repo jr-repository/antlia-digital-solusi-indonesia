@@ -24,10 +24,6 @@ import Dashboard from './pages/admin/Dashboard';
 import AdminArticles from './pages/admin/Articles';
 import ArticleCreate from './pages/admin/ArticleCreate';
 import ArticleEdit from './pages/admin/ArticleEdit';
-import AdminClients from './pages/admin/Clients';
-import Packages from './pages/admin/Packages';
-import Team from './pages/admin/Team';
-import Settings from './pages/admin/Settings';
 
 // Context
 import { DataProvider } from './context/DataContext';
@@ -77,7 +73,7 @@ const router = createBrowserRouter([
     element: <Pricing />,
   },
   
-  // Admin Routes
+  // Admin Routes - Only for Article Management
   {
     path: '/admin',
     element: <Login />,
@@ -101,22 +97,6 @@ const router = createBrowserRouter([
   {
     path: '/admin/artikel/:id',
     element: <AdminPageWrapper><ArticleEdit /></AdminPageWrapper>,
-  },
-  {
-    path: '/admin/klien',
-    element: <AdminPageWrapper><AdminClients /></AdminPageWrapper>,
-  },
-  {
-    path: '/admin/paket',
-    element: <AdminPageWrapper><Packages /></AdminPageWrapper>,
-  },
-  {
-    path: '/admin/tim',
-    element: <AdminPageWrapper><Team /></AdminPageWrapper>,
-  },
-  {
-    path: '/admin/pengaturan',
-    element: <AdminPageWrapper><Settings /></AdminPageWrapper>,
   },
   
   // Catch-all for 404
