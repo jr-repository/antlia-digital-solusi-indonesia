@@ -77,7 +77,7 @@ const Solutions = () => {
         >
           <div className="absolute inset-0 flex items-center z-20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="max-w-3xl" data-aos="fade-up">
+              <div className="max-w-3xl text-left" data-aos="fade-up">
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
                   Solusi Industri
                 </h1>
@@ -107,7 +107,7 @@ const Solutions = () => {
                     className="w-full h-auto rounded-lg shadow-md"
                   />
                 </div>
-                <div className="w-full lg:w-1/2">
+                <div className="w-full lg:w-1/2 text-left">
                   <h2 className="text-2xl md:text-3xl font-bold mb-4">{solution.title}</h2>
                   <p className="text-gray-600 mb-6">{solution.description}</p>
                   <div className="mb-6">
@@ -144,14 +144,14 @@ const Solutions = () => {
         <div className="absolute inset-0 bg-black/70"></div>
         
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
+          <div className="max-w-3xl mx-auto text-left">
             <h2 className="text-3xl font-bold text-white mb-4">
               Temukan Solusi yang Tepat untuk Industri Anda
             </h2>
             <p className="text-lg text-white/90 mb-8">
               Tim ahli kami siap membantu Anda memilih solusi terbaik yang sesuai dengan kebutuhan bisnis Anda.
             </p>
-            <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex flex-wrap gap-4">
               <Link 
                 to="/kontak"
                 className="px-6 py-3 rounded-md bg-antlia-blue text-white font-medium hover:bg-opacity-90 transition-colors"

@@ -69,7 +69,7 @@ Pesan: ${formData.message}
       {/* Header Section */}
       <section className="py-12 md:py-20 bg-gradient-to-r from-antlia-blue to-antlia-purple">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl">
+          <div className="max-w-3xl text-left">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Hubungi Kami
             </h1>
@@ -96,7 +96,7 @@ Pesan: ${formData.message}
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Form */}
-            <div>
+            <div className="text-left">
               <h2 className="text-3xl font-bold mb-6">Kirim Pesan</h2>
               
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -170,7 +170,7 @@ Pesan: ${formData.message}
             </div>
             
             {/* Contact Info */}
-            <div>
+            <div className="text-left">
               <h2 className="text-3xl font-bold mb-6">Informasi Kontak</h2>
               
               <div className="space-y-8">
@@ -243,7 +243,7 @@ Pesan: ${formData.message}
       {/* CTA Section */}
       <section className="py-16 bg-antlia-light">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center">
+          <div className="max-w-3xl mx-auto text-left">
             <h2 className="text-3xl font-bold mb-4">Siap Memulai?</h2>
             <p className="text-lg text-gray-600 mb-8">
               Tim kami siap membantu transformasi digital bisnis Anda dengan solusi teknologi terbaik.

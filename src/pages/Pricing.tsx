@@ -23,7 +23,7 @@ const Pricing = () => {
           <div className="absolute inset-0 bg-black bg-opacity-60"></div>
         </div>
         <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl" data-aos="fade-right">
+          <div className="max-w-3xl text-left" data-aos="fade-right">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Harga Layanan
             </h1>
@@ -48,7 +48,7 @@ const Pricing = () => {
       {/* Pricing Cards */}
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-12" data-aos="fade-up">
+          <div className="max-w-3xl mx-auto text-left mb-12" data-aos="fade-up">
             <h2 className="text-3xl font-bold mb-4">Pilih Paket yang Sesuai untuk Bisnis Anda</h2>
             <p className="text-lg text-gray-600">
               Kami menawarkan berbagai paket layanan dengan harga yang terjangkau untuk berbagai skala bisnis.

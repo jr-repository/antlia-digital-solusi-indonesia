@@ -78,7 +78,7 @@ const AdminArticles = () => {
   return (
     <>
       <div className="flex items-center justify-between mb-6">
-        <div>
+        <div className="text-left">
           <h2 className="text-2xl font-bold">Kelola Artikel</h2>
           <p className="text-gray-500">Lihat dan kelola semua artikel di website Anda</p>
         </div>
@@ -126,7 +126,7 @@ const AdminArticles = () => {
               {filteredArticles.map((article, index) => (
                 <TableRow key={article.id}>
                   <TableCell className="font-medium">{index + 1}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-left">
                     <div>
                       <p className="font-medium truncate max-w-[200px]">
                         {article.title}
@@ -138,13 +138,13 @@ const AdminArticles = () => {
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="hidden md:table-cell">
+                  <TableCell className="hidden md:table-cell text-left">
                     {article.category || "-"}
                   </TableCell>
-                  <TableCell className="hidden md:table-cell">
+                  <TableCell className="hidden md:table-cell text-left">
                     {new Date(article.created_at).toLocaleDateString('id-ID')}
                   </TableCell>
-                  <TableCell className="hidden md:table-cell">
+                  <TableCell className="hidden md:table-cell text-left">
                     <Badge variant={article.published ? "secondary" : "outline"}>
                       {article.published ? "Diterbitkan" : "Draft"}
                     </Badge>
