@@ -145,7 +145,7 @@ const AdminArticles = () => {
                     {new Date(article.created_at).toLocaleDateString('id-ID')}
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
-                    <Badge variant={article.published ? "success" : "secondary"}>
+                    <Badge variant={article.published ? "secondary" : "outline"}>
                       {article.published ? "Diterbitkan" : "Draft"}
                     </Badge>
                   </TableCell>

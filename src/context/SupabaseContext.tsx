@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -18,6 +17,9 @@ export interface Article {
   tags: string[];
   featured: boolean;
   image: string;
+  created_at: string;
+  updated_at: string;
+  published: boolean;
 }
 
 export interface Service {
