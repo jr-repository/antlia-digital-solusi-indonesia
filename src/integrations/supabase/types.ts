@@ -20,6 +20,7 @@ export type Database = {
           featured: boolean
           id: string
           image: string
+          published: boolean
           slug: string
           summary: string
           tags: string[]
@@ -36,6 +37,7 @@ export type Database = {
           featured?: boolean
           id?: string
           image: string
+          published?: boolean
           slug: string
           summary: string
           tags?: string[]
@@ -52,6 +54,7 @@ export type Database = {
           featured?: boolean
           id?: string
           image?: string
+          published?: boolean
           slug?: string
           summary?: string
           tags?: string[]

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, User } from 'lucide-react';
-import { Article } from '@/context/DataContext';
+import { Article } from '@/context/SupabaseContext';
 
 interface ArticleCardProps {
   article: Article;
