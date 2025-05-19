@@ -11,21 +11,27 @@ interface PricingCardProps {
 
 const PricingCard: React.FC<PricingCardProps> = ({ plan }) => {
   return (
-    <div className={`antlia-card p-6 flex flex-col h-full ${plan.popular ? 'border-antlia-blue shadow-lg relative' : ''}`}>
+    <div className={`antlia-card p-6 flex flex-col h-full text-left ${plan.popular ? 'border-antlia-blue shadow-lg relative' : ''}`}>
       {plan.popular && (
         <span className="absolute top-0 right-0 bg-antlia-blue text-white text-xs font-semibold px-3 py-1 rounded-bl-lg rounded-tr-lg">
           Popular
         </span>
       )}
-      <h3 className="text-xl font-bold mb-2 text-left">{plan.name}</h3>
-      <div className="mb-4 text-left">
-        <span className="text-2xl font-bold">{plan.price}</span>
+      <h3 className="text-xl font-bold mb-2">
+        {plan.name}
+      </h3>
+      <div className="mb-4">
+        <span className="text-2xl font-bold">
+          {plan.price}
+        </span>
       </div>
-      <p className="text-gray-600 mb-6 text-left">{plan.description}</p>
+      <p className="text-gray-600 mb-6">
+        {plan.description}
+      </p>
       
       <ul className="space-y-3 mb-8">
         {plan.features.map((feature, index) => (
-          <li key={index} className="flex items-start text-left">
+          <li key={index} className="flex items-start">
             <Check size={18} className="text-antlia-blue mr-2 mt-0.5 flex-shrink-0" />
             <span className="text-gray-700">{feature}</span>
           </li>

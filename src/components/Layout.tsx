@@ -12,7 +12,7 @@ const Layout: React.FC<LayoutProps> = ({ children, hideFooter = false }) => {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="flex-grow">{children}</main>
+      <main className="flex-grow text-left">{children}</main>
       {!hideFooter && <Footer />}
     </div>
   );

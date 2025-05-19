@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   PlusCircle, 
@@ -7,8 +7,7 @@ import {
   Edit, 
   Trash2, 
   Eye, 
-  AlertTriangle, 
-  Check 
+  AlertTriangle
 } from 'lucide-react';
 import { useSupabase } from '@/context/SupabaseContext';
 import { Button } from '@/components/ui/button';
@@ -16,7 +15,6 @@ import { Input } from '@/components/ui/input';
 import { 
   Table, 
   TableBody, 
-  TableCaption, 
   TableCell, 
   TableHead, 
   TableHeader, 
@@ -115,10 +113,10 @@ const AdminArticles = () => {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[50px]">No</TableHead>
-                <TableHead>Judul</TableHead>
-                <TableHead className="hidden md:table-cell">Kategori</TableHead>
-                <TableHead className="hidden md:table-cell">Tanggal</TableHead>
-                <TableHead className="hidden md:table-cell">Status</TableHead>
+                <TableHead className="text-left">Judul</TableHead>
+                <TableHead className="hidden md:table-cell text-left">Kategori</TableHead>
+                <TableHead className="hidden md:table-cell text-left">Tanggal</TableHead>
+                <TableHead className="hidden md:table-cell text-left">Status</TableHead>
                 <TableHead className="w-[150px] text-right">Aksi</TableHead>
               </TableRow>
             </TableHeader>

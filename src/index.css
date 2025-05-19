@@ -113,7 +113,7 @@
   }
   
   .article-content {
-    @apply text-justify leading-relaxed;
+    @apply text-left leading-relaxed;
   }
   
   .antlia-card {
