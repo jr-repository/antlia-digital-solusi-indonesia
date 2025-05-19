@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, Navigate } from 'react-router-dom';
 import { 
   Menu, X, LayoutDashboard, FileText, Settings, LogOut,
   ChevronDown, ChevronRight, ChevronLeft, Users, PackageOpen, Building
@@ -20,12 +20,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  // If user is not authenticated, redirect to login
-  useEffect(() => {
-    if (!isAuthenticated) {
-      window.location.href = '/admin/login';
-    }
-  }, [isAuthenticated]);
+  // If user is not authenticated, redirect to login using React Router
+  if (!isAuthenticated) {
+    return <Navigate to="/admin/login" replace />;
+  }
 
   const menuItems = [
     {
@@ -122,7 +120,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       <div className={`flex-1 ${isSidebarOpen ? 'ml-64' : 'ml-16'} transition-all duration-300`}>
         {/* Mobile Header */}
         <header className="md:hidden bg-white p-4 shadow-sm flex justify-between items-center">
-          <h1 className="text-lg font-bold">Antlia Admin</h1>
+          <h1 className="text-lg font-bold text-gray-800">Antlia Admin</h1>
           <button
             onClick={toggleSidebar}
             className="p-2 rounded-md hover:bg-gray-100 transition-colors"

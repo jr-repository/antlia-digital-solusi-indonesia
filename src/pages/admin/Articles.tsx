@@ -1,212 +1,217 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Search } from 'lucide-react';
-import Layout from '@/components/Layout';
-import ArticleCard from '@/components/ArticleCard';
-import WhatsAppButton from '@/components/WhatsAppButton';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { 
+  PlusCircle, 
+  Search, 
+  Edit, 
+  Trash2, 
+  Eye, 
+  AlertTriangle, 
+  Check 
+} from 'lucide-react';
 import { useSupabase } from '@/context/SupabaseContext';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { 
+  Table, 
+  TableBody, 
+  TableCaption, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from '@/components/ui/table';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
+import { Badge } from '@/components/ui/badge';
+import { supabase } from '@/integrations/supabase/client';
 
-const Articles = () => {
-  const { articles, loading } = useSupabase();
+const AdminArticles = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  
-  // Extract unique categories
-  const categories = ['all', ...new Set(articles.map(article => article.category))];
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [articleToDelete, setArticleToDelete] = useState<string | null>(null);
+  const { articles, loading, refreshArticles } = useSupabase();
 
-  // Filter articles by search term and category
-  const filteredArticles = articles.filter(article => {
-    const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      article.content.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesCategory = selectedCategory === 'all' || article.category === selectedCategory;
-    
-    return matchesSearch && matchesCategory;
-  });
+  // Filter articles by search term
+  const filteredArticles = articles.filter(article =>
+    article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    article.summary.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleDeleteClick = (id: string) => {
+    setArticleToDelete(id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!articleToDelete) return;
+
+    try {
+      const { error } = await supabase
+        .from('articles')
+        .delete()
+        .eq('id', articleToDelete);
+
+      if (error) throw error;
+
+      toast.success('Artikel berhasil dihapus');
+      refreshArticles();
+    } catch (error) {
+      console.error('Error deleting article:', error);
+      toast.error('Gagal menghapus artikel');
+    }
+
+    setIsDeleteDialogOpen(false);
+    setArticleToDelete(null);
+  };
 
   return (
-    <Layout>
-      {/* Header Section */}
-      <section className="py-12 md:py-20 bg-gradient-to-r from-antlia-blue to-antlia-purple">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Artikel
-            </h1>
-            <p className="text-xl text-white/90">
-              Temukan informasi terbaru dan wawasan tentang teknologi dan industri.
-            </p>
-          </div>
+    <>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-2xl font-bold">Kelola Artikel</h2>
+          <p className="text-gray-500">Lihat dan kelola semua artikel di website Anda</p>
         </div>
-      </section>
+        <Link to="/admin/artikel/baru">
+          <Button className="bg-antlia-blue hover:bg-antlia-blue/90">
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Artikel Baru
+          </Button>
+        </Link>
+      </div>
 
-      {/* Breadcrumbs */}
-      <div className="bg-antlia-light/80 border-b">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex items-center text-sm">
-            <Link to="/" className="text-gray-500 hover:text-antlia-blue">Beranda</Link>
-            <ChevronRight size={16} className="mx-2 text-gray-400" />
-            <span className="text-gray-800">Artikel</span>
-          </div>
+      <div className="mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
+        <div className="relative w-full sm:w-72">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <Input
+            placeholder="Cari artikel..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <div className="flex items-center gap-2 text-sm">
+          <span className="text-gray-500">Total: {filteredArticles.length} artikel</span>
         </div>
       </div>
 
-      {/* Search and Filter */}
-      <section className="py-8 bg-antlia-light">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            {/* Search */}
-            <div className="relative flex-1 max-w-md">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search size={18} className="text-gray-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Cari artikel..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-antlia-blue"
-              />
-            </div>
-            
-            {/* Category Filter */}
-            <div>
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="block w-full py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-antlia-blue"
-              >
-                <option value="all">Semua Kategori</option>
-                {categories.filter(cat => cat !== 'all').map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+      {loading.articles ? (
+        <div className="flex justify-center items-center py-16">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-solid border-antlia-blue border-r-transparent" />
         </div>
-      </section>
-
-      {/* Articles Grid */}
-      <section className="py-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          {loading.articles ? (
-            <div className="text-center py-12">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-antlia-blue border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
-              <p className="mt-4 text-lg text-gray-600">Memuat artikel...</p>
-            </div>
-          ) : filteredArticles.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredArticles.map((article) => (
-                <ArticleCard key={article.id} article={article as any} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <h3 className="text-xl font-semibold mb-2">Tidak ada artikel yang ditemukan</h3>
-              <p className="text-gray-600">
-                Coba dengan kata kunci atau kategori lain.
-              </p>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Featured Articles */}
-      <section className="py-16 bg-antlia-light">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold mb-12 text-center">Artikel Pilihan</h2>
-          
-          {loading.articles ? (
-            <div className="text-center py-12">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-antlia-blue border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
-            </div>
-          ) : (
-            <div className="max-w-4xl mx-auto">
-              {articles.filter(article => article.featured).slice(0, 1).map(article => (
-                <div key={article.id} className="bg-white rounded-lg shadow-lg overflow-hidden">
-                  <div className="md:flex">
-                    <div className="md:flex-shrink-0">
-                      <img 
-                        src={article.image || "/assets/featured-article.jpg"} 
-                        alt={article.title} 
-                        className="h-48 w-full object-cover md:h-full md:w-48"
-                      />
-                    </div>
-                    <div className="p-8">
-                      <div className="uppercase tracking-wide text-sm text-antlia-purple font-semibold">
-                        {article.category}
-                      </div>
-                      <Link 
-                        to={`/artikel/${article.id}`}
-                        className="block mt-1 text-2xl font-bold text-gray-900 hover:text-antlia-blue transition-colors"
-                      >
+      ) : filteredArticles.length > 0 ? (
+        <div className="rounded-md border overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[50px]">No</TableHead>
+                <TableHead>Judul</TableHead>
+                <TableHead className="hidden md:table-cell">Kategori</TableHead>
+                <TableHead className="hidden md:table-cell">Tanggal</TableHead>
+                <TableHead className="hidden md:table-cell">Status</TableHead>
+                <TableHead className="w-[150px] text-right">Aksi</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredArticles.map((article, index) => (
+                <TableRow key={article.id}>
+                  <TableCell className="font-medium">{index + 1}</TableCell>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium truncate max-w-[200px]">
                         {article.title}
-                      </Link>
-                      <p className="mt-2 text-gray-600">
-                        {article.summary}
                       </p>
-                      <div className="mt-4">
-                        <Link
-                          to={`/artikel/${article.id}`}
-                          className="text-antlia-blue hover:text-antlia-purple transition-colors font-medium"
-                        >
-                          Baca Selengkapnya
-                        </Link>
-                      </div>
+                      {article.featured && (
+                        <Badge variant="outline" className="bg-antlia-blue/10 text-antlia-blue border-antlia-blue/20 mt-1">
+                          Artikel Pilihan
+                        </Badge>
+                      )}
                     </div>
-                  </div>
-                </div>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {article.category || "-"}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {new Date(article.created_at).toLocaleDateString('id-ID')}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    <Badge variant={article.published ? "success" : "secondary"}>
+                      {article.published ? "Diterbitkan" : "Draft"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <Link to={`/artikel/${article.id}`} target="_blank">
+                        <Button variant="outline" size="icon" className="h-8 w-8" title="Lihat">
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </Link>
+                      <Link to={`/admin/artikel/${article.id}`}>
+                        <Button variant="outline" size="icon" className="h-8 w-8" title="Edit">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </Link>
+                      <Button 
+                        variant="outline"
+                        size="icon" 
+                        className="h-8 w-8" 
+                        title="Hapus" 
+                        onClick={() => handleDeleteClick(article.id)}
+                      >
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
               ))}
-              
-              {articles.filter(article => article.featured).length === 0 && (
-                <div className="text-center py-8">
-                  <p className="text-gray-600">Belum ada artikel pilihan saat ini.</p>
-                </div>
-              )}
-            </div>
-          )}
+            </TableBody>
+          </Table>
         </div>
-      </section>
-
-      {/* Subscribe Section */}
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-4">Dapatkan Artikel Terbaru</h2>
-            <p className="text-lg text-gray-600 mb-8">
-              Berlangganan newsletter kami untuk mendapatkan informasi terbaru dan wawasan industri.
-            </p>
-            
-            <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input 
-                type="email" 
-                placeholder="Alamat Email Anda" 
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-antlia-blue"
-                required
-              />
-              <button 
-                type="submit"
-                className="px-6 py-3 bg-antlia-blue text-white rounded-md hover:bg-opacity-90 transition-colors"
-              >
-                Berlangganan
-              </button>
-            </form>
-            
-            <p className="mt-4 text-sm text-gray-500">
-              Kami tidak akan pernah membagikan email Anda dengan pihak lain.
-            </p>
-          </div>
+      ) : (
+        <div className="text-center py-12 border rounded-lg bg-gray-50">
+          <AlertTriangle className="mx-auto h-12 w-12 text-gray-400" />
+          <h3 className="mt-4 text-lg font-medium">Tidak ada artikel</h3>
+          <p className="mt-2 text-gray-500">
+            Belum ada artikel yang ditambahkan atau sesuai dengan pencarian Anda
+          </p>
+          <Link to="/admin/artikel/baru">
+            <Button className="mt-4 bg-antlia-blue hover:bg-antlia-blue/90">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Buat Artikel Pertama
+            </Button>
+          </Link>
         </div>
-      </section>
+      )}
 
-      {/* WhatsApp Button */}
-      <WhatsAppButton phoneNumber="6281573635143" message="Halo Antlia, saya ingin mengetahui lebih lanjut tentang konten artikel yang Anda miliki." />
-    </Layout>
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Apakah Anda yakin?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tindakan ini tidak dapat dibatalkan. Artikel yang dihapus tidak dapat dikembalikan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction className="bg-red-500 hover:bg-red-600" onClick={handleDeleteConfirm}>
+              <Trash2 className="mr-2 h-4 w-4" />
+              Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
 
-export default Articles;
+export default AdminArticles;

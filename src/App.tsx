@@ -4,6 +4,7 @@ import { Toaster } from 'sonner';
 
 // Components
 import LoadingScreen from './components/LoadingScreen';
+import AdminPageWrapper from './components/admin/AdminPageWrapper';
 
 // Pages
 import Index from './pages/Index';
@@ -87,35 +88,35 @@ const router = createBrowserRouter([
   },
   {
     path: '/admin/dashboard',
-    element: <Dashboard />,
+    element: <AdminPageWrapper><Dashboard /></AdminPageWrapper>,
   },
   {
     path: '/admin/artikel',
-    element: <AdminArticles />,
+    element: <AdminPageWrapper><AdminArticles /></AdminPageWrapper>,
   },
   {
     path: '/admin/artikel/baru',
-    element: <ArticleCreate />,
+    element: <AdminPageWrapper><ArticleCreate /></AdminPageWrapper>,
   },
   {
     path: '/admin/artikel/:id',
-    element: <ArticleEdit />,
+    element: <AdminPageWrapper><ArticleEdit /></AdminPageWrapper>,
   },
   {
     path: '/admin/klien',
-    element: <AdminClients />,
+    element: <AdminPageWrapper><AdminClients /></AdminPageWrapper>,
   },
   {
     path: '/admin/paket',
-    element: <Packages />,
+    element: <AdminPageWrapper><Packages /></AdminPageWrapper>,
   },
   {
     path: '/admin/tim',
-    element: <Team />,
+    element: <AdminPageWrapper><Team /></AdminPageWrapper>,
   },
   {
     path: '/admin/pengaturan',
-    element: <Settings />,
+    element: <AdminPageWrapper><Settings /></AdminPageWrapper>,
   },
   
   // Catch-all for 404
