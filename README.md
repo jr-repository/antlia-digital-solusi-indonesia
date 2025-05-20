@@ -1,73 +1,146 @@
-# Welcome to your Lovable project
 
-## Project info
+# Antlia - Solusi Teknologi Digital Indonesia
 
-**URL**: https://lovable.dev/projects/80f1d6f8-e3e0-4a1f-bea2-385cc225d033
+Website resmi Antlia yang menyediakan berbagai solusi teknologi digital seperti ERP, WMS, CRM, HRM dan IoT untuk bisnis Anda.
 
-## How can I edit this code?
+## Cara Deploy ke GitHub Pages
 
-There are several ways of editing your application.
+### Persiapan Awal
 
-**Use Lovable**
+1. Pastikan Anda memiliki akun GitHub dan repository sudah dibuat: https://github.com/jr-repository/antlia.git
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/80f1d6f8-e3e0-4a1f-bea2-385cc225d033) and start prompting.
+2. Pastikan Anda telah menginstal Git di komputer lokal Anda. Jika belum, unduh dan instal dari [git-scm.com](https://git-scm.com/).
 
-Changes made via Lovable will be committed automatically to this repo.
+3. Clone repository yang sudah dibuat ke komputer lokal:
 
-**Use your preferred IDE**
+```bash
+git clone https://github.com/jr-repository/antlia.git
+cd antlia
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Menyiapkan Project
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+4. Instal dependensi project:
 
-Follow these steps:
+```bash
+npm install
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+5. Menjalankan project secara lokal:
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Menyiapkan GitHub Pages
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+6. Pastikan file `.github/workflows/deploy.yml` sudah ada di repository Anda. File ini berisi konfigurasi untuk GitHub Actions yang akan melakukan proses build dan deploy secara otomatis.
 
-**Use GitHub Codespaces**
+7. Tambahkan konfigurasi `base: '/antlia/'` di `vite.config.ts` (sudah ditambahkan dalam repository).
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+8. Tambahkan file `.nojekyll` di folder `public/` untuk memastikan GitHub Pages tidak memproses situs Anda dengan Jekyll.
 
-## What technologies are used for this project?
+### Menyiapkan Environment Secret
 
-This project is built with:
+9. Di repository GitHub Anda, buka tab "Settings".
+
+10. Di sidebar, pilih "Secrets and variables" kemudian pilih "Actions".
+
+11. Klik tombol "New repository secret" dan tambahkan:
+   - Name: `VITE_SUPABASE_URL`
+   - Secret: [nilai URL Supabase Anda]
+   
+   Klik "Add secret".
+
+12. Ulangi langkah di atas untuk menambahkan secret lain:
+   - Name: `VITE_SUPABASE_ANON_KEY`
+   - Secret: [nilai Anonymous Key Supabase Anda]
+
+### Melakukan Deploy
+
+13. Pastikan semua perubahan telah disimpan dan di-commit ke repository:
+
+```bash
+git add .
+git commit -m "Initial setup for GitHub Pages deployment"
+git push origin main
+```
+
+14. Setelah push ke branch main, GitHub Actions akan otomatis menjalankan workflow deployment.
+
+15. Untuk memeriksa status deployment, buka tab "Actions" di repository GitHub Anda.
+
+16. Setelah build selesai dengan sukses, buka tab "Settings" > "Pages" di repository GitHub Anda. Anda akan melihat bahwa site sudah di-deploy dari branch `gh-pages`.
+
+17. Website Anda sekarang bisa diakses di: `https://jr-repository.github.io/antlia/`
+
+### Troubleshooting
+
+- Jika Anda melihat halaman 404, pastikan bahwa:
+  - Deployment berhasil di tab "Actions"
+  - Base URL di `vite.config.ts` sudah benar (`base: '/antlia/'`)
+  - Branch `gh-pages` sudah dibuat oleh GitHub Actions
+
+- Jika terdapat masalah dengan routing, pastikan bahwa Anda menggunakan `BrowserRouter` dengan `basename` yang benar:
+
+```jsx
+<BrowserRouter basename="/antlia">
+  {/* Route components */}
+</BrowserRouter>
+```
+
+- Jika gambar atau aset tidak muncul, pastikan semua path relatif menggunakan `import` atau dimulai dengan `/antlia/`.
+
+## Setup Development Lokal
+
+### Kebutuhan Sistem
+
+- Node.js (versi 18 atau lebih baru)
+- NPM (biasanya sudah termasuk dengan Node.js)
+- Git
+
+### Instalasi dan Menjalankan Project
+
+1. Clone repository:
+
+```bash
+git clone https://github.com/jr-repository/antlia.git
+cd antlia
+```
+
+2. Install dependensi:
+
+```bash
+npm install
+```
+
+3. Jalankan server development:
+
+```bash
+npm run dev
+```
+
+4. Buka browser dan akses `http://localhost:8080`
+
+## Teknologi yang Digunakan
 
 - Vite
 - TypeScript
 - React
-- shadcn-ui
+- Supabase
 - Tailwind CSS
+- shadcn/ui
 
-## How can I deploy this project?
+## Struktur Project
 
-Simply open [Lovable](https://lovable.dev/projects/80f1d6f8-e3e0-4a1f-bea2-385cc225d033) and click on Share -> Publish.
+- `/src` - Kode sumber utama
+  - `/components` - Komponen React yang dapat digunakan kembali
+  - `/pages` - Halaman utama aplikasi
+  - `/context` - Context providers untuk state management
+  - `/integrations` - Konfigurasi integrasi dengan layanan eksternal seperti Supabase
 
-## Can I connect a custom domain to my Lovable project?
+## Contact
 
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Untuk pertanyaan lebih lanjut, hubungi tim Antlia melalui:
+- Website: [www.antlia.id](https://www.antlia.id)
+- Email: info@antlia.id

@@ -1,47 +1,25 @@
 
-import { createRoot } from 'react-dom/client';
-import { useState, useEffect } from 'react';
-import App from './App.tsx';
-import './index.css';
-import LoadingScreen from './components/LoadingScreen.tsx';
-import { AuthProvider } from './context/AuthContext';
-import { DataProvider } from './context/DataContext';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.tsx'
+import './index.css'
+import { BrowserRouter } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext.tsx'
+import { SupabaseProvider } from './context/SupabaseContext.tsx'
+import { DataProvider } from './context/DataContext.tsx'
+import { Toaster } from './components/ui/toaster'
 
-// Initialize AOS
-AOS.init({
-  duration: 800,
-  once: true,
-  easing: 'ease-in-out',
-});
-
-// Re-initialize AOS on window resize
-window.addEventListener('resize', () => {
-  AOS.refresh();
-});
-
-const AppWithLoading = () => {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // You can add additional loading logic if needed
-    const loadData = async () => {
-      // Simulate loading data
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    };
-
-    loadData();
-  }, []);
-
-  return (
-    <>
-      {isLoading && <LoadingScreen onLoadComplete={() => setIsLoading(false)} />}
-      {!isLoading && (
-        <App />
-      )}
-    </>
-  );
-};
-
-createRoot(document.getElementById("root")!).render(<AppWithLoading />);
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <BrowserRouter basename="/antlia">
+      <SupabaseProvider>
+        <AuthProvider>
+          <DataProvider>
+            <App />
+            <Toaster />
+          </DataProvider>
+        </AuthProvider>
+      </SupabaseProvider>
+    </BrowserRouter>
+  </React.StrictMode>,
+)
